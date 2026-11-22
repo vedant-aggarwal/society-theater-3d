@@ -1,0 +1,182 @@
+/* ============================================================
+   theater3d-page.css — everything under the stage.
+   The theater is the hero; this is the page it opens onto.
+   Tokens come from site.css. Radius stays 0 to 3px, rules are
+   gold hairlines, and no section repeats another's rhythm.
+   ============================================================ */
+
+/* the overlay travels with the document, because the canvas does too */
+.t3hud { position: absolute; top: 0; left: 0; width: 100%; height: 100svh; }
+
+#below {
+  position: relative;
+  z-index: 6;                 /* above #vignette (3) and the hud (5) */
+  background: var(--paper);
+}
+
+/* The overlay furniture belongs to the hero. It fades with the curtain rather than
+   snapping off at a threshold: theater3d.js writes --hero-out as the curtain closes. */
+body { --hero-out: 0; }
+.t3hud, #hint, #peek { opacity: clamp(0, calc(1 - var(--hero-out) * 1.9), 1); }
+body.past-hero #peek,
+body.past-hero #hint { opacity: 0 !important; }
+body.past-hero .t3hud { opacity: 0; pointer-events: none; }
+
+/* --------------------------------------------------------------
+   The band's styles moved to theater3d-marquee.css when it became
+   the marquee (three times the height, real post cards, a preview
+   pulled up on hover). Left as a note rather than deleted silently:
+   the old rules sat here for two passes and someone will look.
+   -------------------------------------------------------------- */
+
+
+.below-sec { padding-block: clamp(3rem, 8vw, 6rem); }
+.below-sec--paper { background: var(--paper); color: var(--ink); }
+.below-sec--ox { background: var(--oxblood-deep); color: var(--off-white); }
+.below-wrap { max-width: 74rem; margin-inline: auto; padding-inline: var(--gutter); }
+.below-eyebrow { margin: 0 0 .55rem; opacity: .62; }
+
+/* what this is: a wide lede with a narrow marginal note, not two equal columns */
+.below-cols {
+  margin-top: clamp(1.4rem, 3vw, 2.4rem);
+  display: grid;
+  gap: clamp(1.6rem, 4vw, 3.5rem);
+}
+@media (min-width: 56rem) {
+  .below-cols { grid-template-columns: minmax(0, 1.55fr) minmax(0, .95fr); align-items: start; }
+}
+.below-lede p { max-width: 44ch; margin: 0 0 1rem; font-size: 1.125em; }
+.below-lede p:last-child { margin-bottom: 0; }
+.below-note {
+  border-top: 1px solid var(--rule-ink);
+  padding-top: .9rem;
+  max-width: 38ch;
+}
+.below-note__label {
+  font-family: var(--font-ui);
+  font-size: .625rem; font-weight: 700;
+  letter-spacing: .18em; text-transform: uppercase;
+  margin: 0 0 .5rem;
+  color: color-mix(in srgb, var(--ink) 62%, transparent);
+}
+.below-note p:last-child { margin: 0; font-size: .9375em; }
+
+/* the register: a dated list, hairline-ruled, gaps shown */
+.reg { list-style: none; margin: clamp(1.4rem, 3vw, 2.2rem) 0 0; padding: 0; }
+.reg__row {
+  display: grid;
+  grid-template-columns: 7.5rem minmax(0, 1fr);
+  gap: .25rem .9rem;
+  padding-block: .7rem;
+  border-top: 1px solid var(--rule);
+  align-items: baseline;
+}
+.reg__row:last-child { border-bottom: 1px solid var(--rule); }
+@media (min-width: 46rem) {
+  .reg__row { grid-template-columns: 8.5rem minmax(0, 1fr) 18rem; }
+}
+.reg__date {
+  font-family: var(--font-ui);
+  font-size: .6875rem; font-weight: 600;
+  letter-spacing: .13em; text-transform: uppercase;
+  color: var(--gold);
+}
+.reg__what { font-family: var(--font-display); font-weight: 600; font-size: 1.0625em; }
+.reg__note {
+  font-family: var(--font-read); font-style: italic;
+  font-size: .9375em;
+  color: color-mix(in srgb, var(--off-white) 66%, transparent);
+}
+/* a gap in the run reads as a gap, not as a missing row */
+.reg__row--gap .reg__what,
+.reg__row--gap .reg__note { opacity: .58; }
+.reg__row--gap .reg__date { color: color-mix(in srgb, var(--gold) 55%, transparent); }
+.reg__foot {
+  margin: 1.1rem 0 0;
+  font-size: .875em; font-style: italic;
+  color: color-mix(in srgb, var(--off-white) 58%, transparent);
+}
+
+/* five doors: a numbered index, each row a full-width target */
+.doors { list-style: none; margin: clamp(1.4rem, 3vw, 2.2rem) 0 0; padding: 0; }
+.doors__row { border-top: 1px solid var(--rule-ink); }
+.doors__row:last-child { border-bottom: 1px solid var(--rule-ink); }
+.doors__row a {
+  display: grid;
+  grid-template-columns: 3rem minmax(0, 1fr);
+  gap: .15rem .9rem;
+  align-items: baseline;
+  padding-block: clamp(.9rem, 2vw, 1.35rem);
+  text-decoration: none;
+  transition: background 260ms cubic-bezier(.2,.85,.3,1), padding-inline-start 260ms cubic-bezier(.2,.85,.3,1);
+}
+@media (min-width: 46rem) {
+  .doors__row a { grid-template-columns: 3.5rem 15rem minmax(0, 1fr); }
+}
+.doors__row a:hover,
+.doors__row a:focus-visible {
+  background: color-mix(in srgb, var(--gold) 26%, transparent);
+  padding-inline-start: .7rem;
+  outline: none;
+}
+.doors__n {
+  font-family: var(--font-ui); font-size: .6875rem; font-weight: 700;
+  letter-spacing: .14em;
+  color: color-mix(in srgb, var(--ink) 45%, transparent);
+}
+.doors__t {
+  font-family: var(--font-display); font-weight: 700;
+  font-size: clamp(1.25rem, .9rem + 1.2vw, 1.7rem);
+  line-height: 1.1;
+}
+.doors__d {
+  font-family: var(--font-read); font-size: .9375em;
+  color: color-mix(in srgb, var(--ink) 74%, transparent);
+  grid-column: 2 / -1;
+}
+@media (min-width: 46rem) { .doors__d { grid-column: 3; } }
+
+/* the foot */
+.below-foot {
+  background: var(--oxblood-shadow);
+  color: var(--off-white);
+  padding-block: clamp(2.4rem, 6vw, 4rem);
+  border-top: 1px solid var(--rule);
+}
+.below-foot__mark {
+  margin: 0;
+  font-family: var(--font-display); font-weight: 700;
+  letter-spacing: .04em;
+  font-size: clamp(1.5rem, 1rem + 2.4vw, 2.6rem);
+  color: var(--gold);
+}
+.below-foot__line { margin: .4rem 0 0; font-size: .9375em; opacity: .82; }
+.below-foot__links { margin: 1.5rem 0 0; display: flex; flex-wrap: wrap; align-items: baseline; }
+.below-foot__links a {
+  font-family: var(--font-ui); font-size: .6875rem; font-weight: 600;
+  letter-spacing: .18em; text-transform: uppercase; text-decoration: none;
+  color: var(--gold);
+  padding-inline: 1.05rem;
+  border-left: 1px solid var(--rule);
+}
+.below-foot__links a:first-child { padding-inline-start: 0; border-left: 0; }
+.below-foot__links a:hover,
+.below-foot__links a:focus-visible { color: #FFF0C4; }
+
+/* --------------------------------------------------------------
+   reduced motion: the band stops and becomes a readable strip
+   -------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .band__track { animation: none; }
+  .band { overflow-x: auto; }
+  .doors__row a { transition: none; }
+}
+
+/* the colophon's promise about the pictures, kept when its section was cut */
+.below-foot__note {
+  max-width: 34rem;
+  margin: 0 auto 1.4rem;
+  font-size: .84rem;
+  line-height: 1.6;
+  opacity: .58;
+}

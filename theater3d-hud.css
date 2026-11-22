@@ -1,0 +1,395 @@
+
+.t3hud {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100svh;
+  z-index: 5;
+  pointer-events: none;
+  will-change: opacity;
+}
+.t3hud, .t3hud * { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* interactivity is gated: nothing clickable until the curtain is open
+   (.is-open, set from ctx.onOpen) AND the hud is shown (.is-shown) */
+.t3hud .t3hud-credits a,
+.t3hud .t3hud-card { pointer-events: none; }
+.t3hud.is-open.is-shown .t3hud-credits a { pointer-events: auto; }
+.t3hud.is-open.is-shown .t3hud-card.is-on { pointer-events: auto; }
+
+/* --------------------------------------------------------------------------
+   the anchored block: one line + the credits strip.
+   Positioned by transform from setAnchor(); the anchor point is its top-left
+   in landscape, its top-centre in portrait.
+   -------------------------------------------------------------------------- */
+
+.t3hud-block {
+  position: absolute;
+  left: 0;
+  top: 0;
+  text-align: center;
+  will-change: transform;
+  opacity: 0;
+  transition: opacity 360ms ease;
+}
+.t3hud-credits { justify-content: center; }
+.t3hud.is-shown .t3hud-block { opacity: 1; }
+
+/* the one line. white-space: nowrap is the hard guarantee that it can never
+   become three lines; the clamp keeps it inside a phone viewport. */
+.t3hud-line {
+  font-family: 'Crimson Pro', Georgia, serif;
+  font-size: clamp(15px, 1.34vw, 22px);
+  line-height: 1.4;
+  white-space: nowrap;
+  color: rgba(248, 240, 216, .94);
+  text-shadow: 0 1px 4px rgba(0,0,0,.9), 0 2px 18px rgba(0, 0, 0, .85);
+  opacity: 0;
+  transform: translateY(9px);
+  transition:
+    opacity 460ms cubic-bezier(.2,.85,.3,1) 180ms,
+    transform 460ms cubic-bezier(.2,.85,.3,1) 180ms;
+}
+.t3hud.is-shown .t3hud-line { opacity: 1; transform: none; }
+
+/* --------------------------------------------------------------------------
+   the credits strip: label, standing hairline, label, standing hairline...
+   like the credits block at the foot of a playbill.
+   -------------------------------------------------------------------------- */
+
+.t3hud-credits {
+  display: flex;
+  align-items: center;
+  margin-top: 18px;
+}
+.t3hud-row { display: flex; align-items: center; }
+
+/* the standing rule between the two sub-rows (only visible in landscape,
+   where the rows sit side by side as one strip) */
+.t3hud-row + .t3hud-row::before {
+  content: "";
+  width: 1px;
+  height: 24px;
+  background: rgba(232, 199, 122, .42);
+}
+
+/* the standing rules between columns. They draw downward on entrance. */
+.t3hud-rule {
+  width: 1px;
+  height: 24px;
+  background: rgba(232, 199, 122, .42);
+  transform: scaleY(0);
+  transform-origin: 50% 0;
+  transition: transform 380ms cubic-bezier(.2,.85,.3,1) calc(430ms + var(--i, 0) * 55ms);
+}
+.t3hud.is-shown .t3hud-rule { transform: scaleY(1); }
+
+.t3hud-col {
+  position: relative;
+  display: inline-block;
+  padding: 2px var(--pad, 16px);
+  font-family: 'Montserrat', Arial, sans-serif;
+  font-size: clamp(11px, .96vw, 15px);
+  font-weight: 600;
+  letter-spacing: calc(var(--trk, .18em) + .13em);
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  color: rgba(232, 199, 122, .88);
+  text-shadow: 0 1px 3px rgba(0,0,0,.95), 0 2px 14px rgba(0, 0, 0, .9);
+  opacity: 0;
+  transition:
+    opacity 420ms ease calc(380ms + var(--i, 0) * 60ms),
+    letter-spacing 460ms cubic-bezier(.2,.85,.3,1) calc(380ms + var(--i, 0) * 60ms),
+    color 280ms ease;
+}
+.t3hud.is-shown .t3hud-col { opacity: 1; letter-spacing: var(--trk, .18em); }
+/* once the entrance has settled the stagger delays must not lag hover states */
+.t3hud.is-settled .t3hud-col { transition: color 260ms ease; }
+
+.t3hud-col.is-flagship { font-weight: 600; }
+
+.t3hud-row:first-child .t3hud-col:first-child { padding-left: 0; }
+.t3hud-row:last-child  .t3hud-col:last-child  { padding-right: 0; }
+
+.t3hud-col::after {
+  content: "";
+  position: absolute;
+  left: var(--pad, 16px);
+  right: var(--pad, 16px);
+  bottom: -6px;
+  height: 1px;
+  background: rgba(232, 199, 122, .55);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition: transform 340ms cubic-bezier(.2,.85,.3,1);
+}
+.t3hud-row:first-child .t3hud-col:first-child::after { left: 0; }
+.t3hud-row:last-child  .t3hud-col:last-child::after  { right: 0; }
+
+.t3hud-col:hover,
+.t3hud-col:focus-visible,
+.t3hud-col.is-armed { color: #E8C77A; }
+.t3hud-col:hover::after,
+.t3hud-col:focus-visible::after,
+.t3hud-col.is-armed::after { transform: scaleX(1); }
+
+.t3hud-col:focus-visible {
+  outline: 1px solid rgba(232, 199, 122, .9);
+  outline-offset: 6px;
+}
+
+/* --------------------------------------------------------------------------
+   the preview card: a playbill card, not a tooltip.
+   Paper ground, oxblood double rule, Montserrat kicker, live frame, a set
+   line of Crimson italic below. It lifts and scales open with mass.
+   -------------------------------------------------------------------------- */
+
+.t3hud-card {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: min(430px, calc(100vw - 24px));
+  padding: 12px 14px 10px;
+  background:
+    linear-gradient(160deg, rgba(64, 0, 0, .05), rgba(64, 0, 0, 0) 38%),
+    #F8F0D8;
+  border: 1px solid rgba(185, 151, 91, .65);
+  border-radius: 2px;
+  box-shadow:
+    0 30px 60px rgba(0, 0, 0, .55),
+    0 10px 22px rgba(10, 2, 2, .45),
+    0 2px 6px rgba(10, 2, 2, .35);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(16px) scale(.958);
+  transition:
+    transform 400ms cubic-bezier(.2,.85,.3,1),
+    opacity 300ms cubic-bezier(.2,.85,.3,1),
+    visibility 0s linear 400ms;
+}
+/* when the card had to open above the strip it drops from above instead */
+.t3hud-card.is-flip { transform: translateY(-16px) scale(.958); }
+.t3hud-card.is-on {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition:
+    transform 400ms cubic-bezier(.2,.85,.3,1),
+    opacity 220ms ease-out,
+    visibility 0s;
+}
+
+.t3hud-card-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 0 2px 8px;
+}
+.t3hud-card-act {
+  font-family: 'Montserrat', Arial, sans-serif;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .24em;
+  text-transform: uppercase;
+  color: rgba(64, 0, 0, .62);
+}
+.t3hud-card-name {
+  font-family: 'Montserrat', Arial, sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: #400000;
+}
+
+/* the 3px-over-1px playbill double rule */
+.t3hud-card-drule {
+  height: 0;
+  border-top: 2px solid rgba(64, 0, 0, .75);
+  position: relative;
+  margin-bottom: 10px;
+}
+.t3hud-card-drule::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 2px;
+  height: 1px;
+  background: rgba(64, 0, 0, .4);
+}
+
+/* the stage: a fixed 1280x800 desktop render scaled down into the card */
+.t3hud-card-stage {
+  position: relative;
+  aspect-ratio: 1280 / 800;
+  overflow: hidden;
+  background: #2A0000;
+  border: 1px solid rgba(64, 0, 0, .35);
+  border-radius: 1px;
+}
+.t3hud-card-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+.t3hud-frame {
+  display: block;
+  width: 1280px;
+  height: 800px;
+  border: 0;
+  transform: scale(var(--t3-scale, .3));
+  transform-origin: 0 0;
+  pointer-events: none;
+  background: #F8F0D8;
+}
+
+/* the veil: shown while a page is loading ("OPENING") or when a destination
+   does not exist yet ("IN REHEARSAL"). Never a broken frame, never an error. */
+.t3hud-card-veil {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-align: center;
+  background: radial-gradient(ellipse 90% 80% at 50% 36%, #4C1009 0%, #400000 55%, #2A0000 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(232, 199, 122, .22),
+    inset 0 0 60px rgba(0, 0, 0, .45);
+  opacity: 1;
+  transition: opacity 380ms cubic-bezier(.2,.85,.3,1);
+}
+.t3hud-card-veil.is-lifted { opacity: 0; }
+.t3hud-veil-title {
+  font-family: 'Noto Serif Display', Georgia, serif;
+  font-weight: 700;
+  font-size: 21px;
+  letter-spacing: .04em;
+  color: #E8C77A;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, .6);
+}
+.t3hud-veil-state {
+  font-family: 'Montserrat', Arial, sans-serif;
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: .3em;
+  text-transform: uppercase;
+  color: rgba(185, 151, 91, .95);
+  padding: 4px 10px;
+  border: 1px solid rgba(232, 199, 122, .3);
+  border-radius: 1px;
+}
+.t3hud-veil-sub {
+  font-family: 'Crimson Pro', Georgia, serif;
+  font-style: italic;
+  font-size: 13px;
+  color: rgba(248, 240, 216, .66);
+}
+
+/* the foot row: the set line on the left, the scroll affordance on the right */
+.t3hud-card-foot {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+.t3hud-card-note {
+  margin: 9px 2px 2px;
+  font-family: 'Crimson Pro', Georgia, serif;
+  font-style: italic;
+  font-size: 14px;
+  line-height: 1.45;
+  color: rgba(64, 0, 0, .8);
+}
+
+/* the honest affordance that the preview scrolls. Furniture type, quiet;
+   it only appears once the veil has lifted and there is a live page to
+   scroll (.is-live is stamped by the module alongside the veil). */
+.t3hud-card-hint {
+  margin: 9px 2px 2px;
+  font-family: 'Montserrat', Arial, sans-serif;
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: .26em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: rgba(64, 0, 0, .45);
+  opacity: 0;
+  transition: opacity 320ms cubic-bezier(.2,.85,.3,1);
+}
+.t3hud-card.is-live .t3hud-card-hint { opacity: 1; }
+
+/* --------------------------------------------------------------------------
+   portrait: the wordmark sits top-centre, so the block centres under it and
+   the credits stack into two readable rows instead of squeezing five across.
+   -------------------------------------------------------------------------- */
+
+.t3hud.is-portrait .t3hud-block { text-align: center; }
+.t3hud.is-portrait .t3hud-line { font-size: clamp(11px, 3.3vw, 16px); }
+.t3hud.is-portrait .t3hud-credits {
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 14px;
+}
+.t3hud.is-portrait .t3hud-row { justify-content: center; }
+.t3hud.is-portrait .t3hud-row + .t3hud-row::before { display: none; }
+.t3hud.is-portrait .t3hud-col { padding: 2px 10px; font-size: 10px; }
+.t3hud.is-portrait .t3hud-row:first-child .t3hud-col:first-child { padding-left: 10px; }
+.t3hud.is-portrait .t3hud-row:last-child  .t3hud-col:last-child  { padding-right: 10px; }
+.t3hud.is-portrait .t3hud-row:first-child .t3hud-col:first-child::after { left: 10px; }
+.t3hud.is-portrait .t3hud-row:last-child  .t3hud-col:last-child::after  { right: 10px; }
+.t3hud.is-portrait .t3hud-card { width: min(430px, calc(100vw - 20px)); }
+
+/* --------------------------------------------------------------------------
+   reduced motion: the complete, deliberate static version. Everything still
+   appears and previews still open, instantly.
+   -------------------------------------------------------------------------- */
+
+.t3hud.t3hud-reduced,
+.t3hud.t3hud-reduced * { transition: none !important; }
+@media (prefers-reduced-motion: reduce) {
+  .t3hud, .t3hud * { transition: none !important; }
+}
+
+
+/* --------------------------------------------------------------------------
+   Reveal safety net. A tab backgrounded during the curtain freezes these
+   transitions mid-flight and the block can come back stranded at 0 opacity.
+   theater3d.js stamps .is-forced a few seconds after the curtain lands if the
+   entrance has not completed; from there the block is simply *there*.
+   -------------------------------------------------------------------------- */
+.t3hud.is-forced .t3hud-block,
+.t3hud.is-forced .t3hud-line,
+.t3hud.is-forced .t3hud-col {
+  transition: color 260ms ease !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+.t3hud.is-forced .t3hud-col { letter-spacing: var(--trk, .18em) !important; }
+.t3hud.is-forced .t3hud-block { transform: var(--t3-anchor, none) !important; }
+.t3hud.is-forced .t3hud-rule { transform: scaleY(1) !important; transition: none !important; }
+
+
+/* A copy held out of the case sits in front of this block, and DOM always wins
+   over the canvas. So while a copy is presented the whole block — the line and
+   the five columns — ducks right down and the copy has the stage; when it goes
+   home the block comes back on its own easing. Ducked, never moved.
+   theater3d-interact.js stamps body.presenting. */
+body.presenting .t3hud-block,
+body.presenting .t3hud.is-forced .t3hud-block {
+  opacity: .14 !important;
+  transition: opacity 340ms cubic-bezier(.2,.85,.3,1) !important;
+}
+body.presenting .t3hud .t3hud-credits a { pointer-events: none; }
+
+/* in the forced (safety-net) state the block's transition is color-only, which
+   would make the return from a duck a snap; the return must ease like the duck */
+.t3hud.is-forced .t3hud-block {
+  transition: opacity 340ms cubic-bezier(.2,.85,.3,1) !important;
+}

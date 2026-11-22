@@ -1,0 +1,1416 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="A sample student society, staged as a 3D theater. Placeholder content.">
+<meta name="robots" content="noindex,nofollow">
+<title>The Society · The Theater</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:ital,wdth,wght@0,62.5..100,400..800;1,62.5..100,400..700&family=Crimson+Pro:ital,wght@0,400;0,500;1,400&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="site.css">
+<link rel="stylesheet" href="theater3d-page.css">
+<link rel="stylesheet" href="theater3d-hud.css">
+<link rel="stylesheet" href="theater3d-reader.css">
+<link rel="stylesheet" href="theater3d-cursor.css">
+<link rel="stylesheet" href="theater3d-marquee.css">
+<link rel="stylesheet" href="theater3d-lobby.css">
+<link rel="stylesheet" href="theater3d-acts.css">
+<link rel="stylesheet" href="theater3d-summit.css">
+<link rel="stylesheet" href="theater3d-news.css">
+<link rel="stylesheet" href="theater3d-company.css">
+<link rel="stylesheet" href="theater3d-footer.css">
+
+<script>
+  // Viewport test rig. ?vp=430x932 pins the page to a phone-sized viewport inside a desktop
+  // window, so the portrait composition can actually be looked at. Inert without the param.
+  (function () {
+    var m = location.search.match(/[?&]vp=(\d+)x(\d+)/);
+    if (!m) return;
+    var w = +m[1], h = +m[2];
+    Object.defineProperty(window, 'innerWidth',  { get: function () { return w; } });
+    Object.defineProperty(window, 'innerHeight', { get: function () { return h; } });
+    var r = document.documentElement;
+    r.style.setProperty('--vp-w', w + 'px');
+    r.style.setProperty('--vp-h', h + 'px');
+    r.className += ' vp-clamp';
+  })();
+</script>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.169.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.169.0/examples/jsm/"
+  }
+}
+</script>
+
+<style>
+  :root {
+    --oxblood: #400000;
+    --oxblood-2: #602018;
+    --shadow: #380000;
+    --gold: #E8C77A;
+    --paper: #F8F0D8;
+    --offwhite: #F0F0F0;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: #120404;
+    overflow-x: hidden;
+    font-family: 'Crimson Pro', Georgia, serif;
+  }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  #hero { position: relative; height: 100svh; overflow: hidden; }
+  #stage { position: absolute; inset: 0; }
+  .vp-clamp body { background: #060202; }
+  .vp-clamp #hero { height: var(--vp-h); }
+  .vp-clamp #stage, .vp-clamp #vignette {
+    inset: auto; left: 50%; top: 0;
+    width: var(--vp-w); height: var(--vp-h);
+    transform: translateX(-50%);
+    outline: 1px solid #2a1210;
+  }
+  #stage canvas { display: block; width: 100%; height: 100%; }
+
+  /* cinematic vignette grade over the canvas */
+  #vignette {
+    position: absolute; inset: 0; pointer-events: none; z-index: 3;
+    background:
+      radial-gradient(ellipse 120% 90% at 50% 42%, rgba(0,0,0,0) 55%, rgba(10,2,2,.52) 100%),
+      linear-gradient(to bottom, rgba(8,2,2,.30) 0%, rgba(0,0,0,0) 14%, rgba(0,0,0,0) 86%, rgba(8,2,2,.42) 100%);
+  }
+
+  .sr-only {
+    position: absolute; width: 1px; height: 1px; overflow: hidden;
+    clip: rect(0 0 0 0); white-space: nowrap;
+  }
+
+  /* tagline under the 3D name · position is driven from JS by projecting the text mesh */
+  #tagline {
+    position: absolute; z-index: 4; pointer-events: none;
+    opacity: 0; transform: translateY(10px);
+    transition: opacity 1.4s ease .1s, transform 1.4s ease .1s;
+    max-width: 34ch;
+    font-family: 'Crimson Pro', Georgia, serif;
+    font-size: clamp(15px, 1.25vw, 19px);
+    line-height: 1.5;
+    color: rgba(248, 240, 216, .82);
+    text-shadow: 0 1px 12px rgba(0,0,0,.8);
+  }
+  #tagline em { font-style: italic; color: var(--gold); }
+  #tagline.on { opacity: 1; transform: translateY(0); }
+  /* the HUD block replaces this line entirely once it loads; the static copy below is
+     only ever seen if theater3d-hud.js failed to arrive. */
+  body.has-hud #tagline { display: none; }
+
+  /* the "what's inside" line for a pulled copy */
+  #peek {
+    position: absolute; z-index: 4; pointer-events: none;
+    opacity: 0; transform: translate(-50%, 6px);
+    transition: opacity .28s ease, transform .28s ease;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 11px; font-weight: 600;
+    letter-spacing: .22em; text-transform: uppercase; white-space: nowrap;
+    color: var(--gold);
+    text-shadow: 0 1px 10px rgba(0,0,0,.9);
+    padding: 6px 14px;
+    border: 1px solid rgba(232,199,122,.35);
+    border-radius: 2px;
+    background: rgba(28, 6, 4, .72);
+  }
+  #peek.on { opacity: 1; transform: translate(-50%, 0); }
+  #peek .sub {
+    display: block; margin-top: 3px;
+    font-family: 'Crimson Pro', serif; font-weight: 400; font-style: italic;
+    font-size: 12px; letter-spacing: .04em; text-transform: none;
+    color: rgba(248,240,216,.75);
+  }
+
+  #hint {
+    position: absolute; z-index: 4; left: 50%; top: calc(100svh - 34px);
+    display: flex; align-items: center; gap: 14px;
+    transform: translateX(-50%);
+    pointer-events: none; opacity: 0; transition: opacity 1.6s ease 1s;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 10px; font-weight: 500;
+    letter-spacing: .3em; text-transform: uppercase;
+    color: rgba(232,199,122,.42);
+  }
+  #hint.on { opacity: 1; }
+  /* the sound toggle: bottom right of the stage, quiet until wanted */
+  .t3snd-place {
+    position: absolute; z-index: 6;
+    right: clamp(14px, 2.2vw, 30px);
+    top: calc(100svh - 46px);
+  }
+  body.past-hero .t3snd-place { opacity: 0; pointer-events: none; transition: opacity 260ms ease; }
+  .hint__down { animation: hint-nudge 2.6s cubic-bezier(.2,.85,.3,1) infinite; }
+  @keyframes hint-nudge { 0%,72%,100% { transform: translateY(0); opacity: .5; } 84% { transform: translateY(4px); opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { .hint__down { animation: none; } }
+
+  /* ---------- static fallback (no WebGL / context lost) ---------- */
+  #fallback {
+    position: fixed; inset: 0; z-index: 10; display: none;
+    background:
+      radial-gradient(ellipse 90% 70% at 62% 34%, #58170e 0%, #400000 45%, #230404 78%, #150303 100%);
+    overflow: auto;
+  }
+  #fallback.on { display: block; }
+  body:has(#fallback.on) #below, body:has(#fallback.on) #hero-spacer { display: none; }
+  #fallback::before, #fallback::after {
+    content: ""; position: fixed; top: 0; bottom: 0; width: 9vw; min-width: 54px; z-index: 2;
+    background:
+      repeating-linear-gradient(90deg, #4c0d08 0 8px, #2b0503 8px 15px, #601811 15px 22px, #350704 22px 30px);
+    box-shadow: 0 0 40px 10px rgba(0,0,0,.6);
+  }
+  #fallback::before { left: 0; border-right: 3px solid rgba(232,199,122,.35); }
+  #fallback::after  { right: 0; border-left: 3px solid rgba(232,199,122,.35); }
+  .fb-inner {
+    position: relative; z-index: 1;
+    max-width: 1060px; margin: 0 auto;
+    padding: 12vh 12vw 8vh;
+    display: flex; flex-wrap: wrap; gap: 5vw; align-items: center; justify-content: center;
+  }
+  .fb-left { flex: 1 1 300px; min-width: 280px; }
+  .fb-left h1 {
+    font-family: 'Noto Serif Display', Georgia, serif;
+    font-weight: 700; font-size: clamp(38px, 5.4vw, 72px);
+    letter-spacing: .02em; line-height: .95;
+    color: var(--gold);
+    text-shadow: 0 2px 0 #7c5a1e, 0 4px 0 #4c350f, 0 10px 30px rgba(0,0,0,.7);
+  }
+  .fb-left p {
+    margin-top: 22px; max-width: 34ch;
+    font-size: 17px; line-height: 1.55; color: rgba(248,240,216,.85);
+  }
+  .fb-left p em { color: var(--gold); }
+  .fb-nav { margin-top: 26px; display: flex; flex-wrap: wrap; align-items: baseline; }
+  .fb-nav a {
+    font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 600;
+    letter-spacing: .2em; text-transform: uppercase; text-decoration: none;
+    color: var(--gold); padding: 0 14px; border-left: 1px solid rgba(232,199,122,.35);
+  }
+  .fb-nav a:first-child { padding-left: 0; border-left: 0; }
+  .fb-nav a:hover, .fb-nav a:focus-visible { color: #FFF0C4; }
+  .fb-shelf {
+    flex: 1 1 320px; min-width: 300px;
+    background: linear-gradient(180deg, #3a1d0e, #2a1207);
+    border: 10px solid #241005; border-radius: 3px;
+    box-shadow: 0 30px 60px rgba(0,0,0,.6), inset 0 0 40px rgba(0,0,0,.6);
+    padding: 18px 16px;
+  }
+  .fb-row { display: flex; gap: 12px; align-items: flex-end; padding: 10px 6px 0; }
+  .fb-row + .fb-row { border-top: 6px solid #1d0c04; margin-top: 12px; }
+  .fb-row a { display: block; flex: 0 0 auto; width: 84px; text-decoration: none; }
+  .fb-row img, .fb-cover {
+    width: 84px; height: 119px; object-fit: cover; display: block;
+    box-shadow: 4px 6px 14px rgba(0,0,0,.65);
+    border-radius: 1px;
+  }
+  .fb-cover {
+    background: linear-gradient(160deg, #571109, #400000 70%);
+    border: 1px solid rgba(232,199,122,.4);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+    font-family: 'Noto Serif Display', serif; color: var(--gold);
+    font-size: 11px; letter-spacing: .08em; text-align: center; padding: 6px;
+  }
+  .fb-cover small { font-family: 'Montserrat', sans-serif; font-size: 8px; letter-spacing: .2em; color: rgba(248,240,216,.7); }
+  .fb-cover.ghost { opacity: .35; border-style: dashed; background: transparent; }
+  .fb-label {
+    margin-top: 6px; text-align: center;
+    font-family: 'Montserrat', sans-serif; font-size: 8px; font-weight: 600;
+    letter-spacing: .18em; color: #d8b877;
+  }
+</style>
+</head>
+<body>
+
+<h1 class="sr-only">The Society, a sample student society</h1>
+
+<div id="hero">
+  <div id="stage" aria-hidden="true"></div>
+  <div id="vignette"></div>
+</div>
+
+<p id="tagline">A sample student society at a sample college. It runs campaigns for sample brands, stages <em>SUMMIT</em>, teaches the case method, and publishes what it learns.</p>
+
+<div id="peek" role="status"></div>
+<div id="hint"><span class="hint__down" aria-hidden="true">&#8595;</span></div>
+
+<div id="fallback" role="region" aria-label="The Society library">
+  <div class="fb-inner">
+    <div class="fb-left">
+      <h1>THE SOCIETY</h1>
+      <p>A sample student society at a sample college. It runs campaigns for sample brands, stages <em>SUMMIT</em>, teaches the case method, and publishes what it learns.</p>
+      <p class="fb-nav">
+        <a href="work.html">Campaigns</a><a href="summit.html">SUMMIT</a><a href="archive.html">Publishing</a><a href="learn.html">The case method</a><a href="society.html">The society</a>
+      </p>
+    </div>
+    <div class="fb-shelf">
+      <div class="fb-row">
+        <a href="archive.html"><img src="assets/covers/bulletin-3.jpg" alt="The Bulletin, sample edition 3"><div class="fb-label">ED. 3</div></a>
+        <a href="archive.html"><div class="fb-cover">BULLETIN<small>№ 2 · SAMPLE</small></div><div class="fb-label">ED. 2</div></a>
+        <a href="archive.html"><div class="fb-cover">BULLETIN<small>№ 1 · SAMPLE</small></div><div class="fb-label">ED. 1</div></a>
+        <a href="archive.html"><div class="fb-cover ghost">NEXT<small>SAMPLE</small></div><div class="fb-label">NEXT</div></a>
+      </div>
+      <div class="fb-row">
+        <a href="archive.html"><img src="assets/covers/casebook-2.jpg" alt="The Casebook, sample second edition"><div class="fb-label">ED. 2</div></a>
+        <a href="archive.html"><div class="fb-cover">CASEBOOK<small>FIRST EDITION</small></div><div class="fb-label">ED. 1</div></a>
+        <a href="archive.html"><div class="fb-cover ghost">CASEBOOK<small>NEXT EDITION</small></div><div class="fb-label">NEXT</div></a>
+      </div>
+      <div class="fb-row">
+        <a href="archive.html"><div class="fb-cover ghost">SERIES<small>SEASON 1</small></div><div class="fb-label">SEASON 1</div></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Everything below the theater. -->
+<main id="below">
+
+  <!-- The marquee. Generated from assets/feed/feed.json (sample data). Each card
+       opens a preview of the post's pages. -->
+  <section class="band" aria-labelledby="band-h">
+    <h2 class="sr-only" id="band-h">Recent posts</h2>
+    <div class="band__track">
+      <ul class="band__run">
+      <li class="band__item">
+        <button class="band__card" type="button"
+          data-slug="2026-08-14-sample-post-01"
+          data-url="#"
+          data-pages="assets/feed/2026-08-14-sample-post-01/p01.jpg|assets/feed/2026-08-14-sample-post-01/p02.jpg|assets/feed/2026-08-14-sample-post-01/p03.jpg|assets/feed/2026-08-14-sample-post-01/p04.jpg"
+          data-count="4"
+          data-more="0"
+          data-kind="Edition"
+          data-title="Sample edition 4"
+          data-date="August 2026"
+          data-line="Placeholder summary for the fourth sample edition of the bulletin.">
+          <img class="band__shot" src="assets/feed/2026-08-14-sample-post-01/thumb.jpg" alt="" loading="lazy" width="300" height="375" decoding="async">
+          <span class="band__meta">
+            <span class="band__kind">Edition</span>
+            <span class="band__title">Sample edition 4</span>
+            <span class="band__date">August 2026</span>
+          </span>
+        </button>
+      </li>
+      <li class="band__item">
+        <button class="band__card" type="button"
+          data-slug="2026-08-11-sample-post-02"
+          data-url="#"
+          data-pages="assets/feed/2026-08-11-sample-post-02/p01.jpg"
+          data-count="1"
+          data-more="0"
+          data-kind="Session"
+          data-title="Sample session two"
+          data-date="August 2026"
+          data-line="Placeholder summary for a sample speaker session.">
+          <img class="band__shot" src="assets/feed/2026-08-11-sample-post-02/thumb.jpg" alt="" loading="lazy" width="300" height="375" decoding="async">
+          <span class="band__meta">
+            <span class="band__kind">Session</span>
+            <span class="band__title">Sample session two</span>
+            <span class="band__date">August 2026</span>
+          </span>
+        </button>
+      </li>
+      <li class="band__item">
+        <button class="band__card" type="button"
+          data-slug="2026-08-02-sample-post-03"
+          data-url="#"
+          data-pages="assets/feed/2026-08-02-sample-post-03/p01.jpg|assets/feed/2026-08-02-sample-post-03/p02.jpg|assets/feed/2026-08-02-sample-post-03/p03.jpg"
+          data-count="3"
+          data-more="0"
+          data-kind="Series"
+          data-title="Sample series, episode 2"
+          data-date="August 2026"
+          data-line="Placeholder summary for the second episode of a sample concept series.">
+          <img class="band__shot" src="assets/feed/2026-08-02-sample-post-03/thumb.jpg" alt="" loading="lazy" width="300" height="375" decoding="async">
+          <span class="band__meta">
+            <span class="band__kind">Series</span>
+            <span class="band__title">Sample series, episode 2</span>
+            <span class="band__date">August 2026</span>
+          </span>
+        </button>
+      </li>
+      <li class="band__item">
+        <button class="band__card" type="button"
+          data-slug="2026-07-23-sample-post-04"
+          data-url="#"
+          data-pages="assets/feed/2026-07-23-sample-post-04/p01.jpg|assets/feed/2026-07-23-sample-post-04/p02.jpg|assets/feed/2026-07-23-sample-post-04/p03.jpg"
+          data-count="3"
+          data-more="0"
+          data-kind="Series"
+          data-title="Sample series, episode 1"
+          data-date="July 2026"
+          data-line="Placeholder summary for the first episode of a sample concept series.">
+          <img class="band__shot" src="assets/feed/2026-07-23-sample-post-04/thumb.jpg" alt="" loading="lazy" width="300" height="375" decoding="async">
+          <span class="band__meta">
+            <span class="band__kind">Series</span>
+            <span class="band__title">Sample series, episode 1</span>
+            <span class="band__date">July 2026</span>
+          </span>
+        </button>
+      </li>
+      <li class="band__item">
+        <button class="band__card" type="button"
+          data-slug="2026-07-22-sample-post-05"
+          data-url="#"
+          data-pages="assets/feed/2026-07-22-sample-post-05/p01.jpg"
+          data-count="1"
+          data-more="0"
+          data-kind="The team"
+          data-title="Sample team update"
+          data-date="July 2026"
+          data-line="Placeholder summary for a sample team announcement.">
+          <img class="band__shot" src="assets/feed/2026-07-22-sample-post-05/thumb.jpg" alt="" loading="lazy" width="300" height="375" decoding="async">
+          <span class="band__meta">
+            <span class="band__kind">The team</span>
+            <span class="band__title">Sample team update</span>
+            <span class="band__date">July 2026</span>
+          </span>
+        </button>
+      </li>
+      <li class="band__item">
+        <button class="band__card" type="button"
+          data-slug="2026-03-31-sample-post-06"
+          data-url="#"
+          data-pages="assets/feed/2026-03-31-sample-post-06/p01.jpg|assets/feed/2026-03-31-sample-post-06/p02.jpg|assets/feed/2026-03-31-sample-post-06/p03.jpg"
+          data-count="3"
+          data-more="0"
+          data-kind="Live project"
+          data-title="Sample project one"
+          data-date="March 2026"
+          data-line="Placeholder summary for the first sample live project.">
+          <img class="band__shot" src="assets/feed/2026-03-31-sample-post-06/thumb.jpg" alt="" loading="lazy" width="300" height="375" decoding="async">
+          <span class="band__meta">
+            <span class="band__kind">Live project</span>
+            <span class="band__title">Sample project one</span>
+            <span class="band__date">March 2026</span>
+          </span>
+        </button>
+      </li>
+      <li class="band__item">
+        <button class="band__card" type="button"
+          data-slug="2026-03-24-sample-post-07"
+          data-url="#"
+          data-pages="assets/feed/2026-03-24-sample-post-07/p01.jpg|assets/feed/2026-03-24-sample-post-07/p02.jpg|assets/feed/2026-03-24-sample-post-07/p03.jpg"
+          data-count="3"
+          data-more="0"
+          data-kind="Live project"
+          data-title="Sample project two"
+          data-date="March 2026"
+          data-line="Placeholder summary for the second sample live project.">
+          <img class="band__shot" src="assets/feed/2026-03-24-sample-post-07/thumb.jpg" alt="" loading="lazy" width="300" height="375" decoding="async">
+          <span class="band__meta">
+            <span class="band__kind">Live project</span>
+            <span class="band__title">Sample project two</span>
+            <span class="band__date">March 2026</span>
+          </span>
+        </button>
+      </li>
+      <li class="band__item">
+        <button class="band__card" type="button"
+          data-slug="2026-03-23-sample-post-08"
+          data-url="#"
+          data-pages="assets/feed/2026-03-23-sample-post-08/p01.jpg|assets/feed/2026-03-23-sample-post-08/p02.jpg|assets/feed/2026-03-23-sample-post-08/p03.jpg"
+          data-count="3"
+          data-more="0"
+          data-kind="Live project"
+          data-title="Sample project three"
+          data-date="March 2026"
+          data-line="Placeholder summary for the third sample live project.">
+          <img class="band__shot" src="assets/feed/2026-03-23-sample-post-08/thumb.jpg" alt="" loading="lazy" width="300" height="375" decoding="async">
+          <span class="band__meta">
+            <span class="band__kind">Live project</span>
+            <span class="band__title">Sample project three</span>
+            <span class="band__date">March 2026</span>
+          </span>
+        </button>
+      </li>
+      <li class="band__item">
+        <button class="band__card" type="button"
+          data-slug="2026-02-08-sample-post-09"
+          data-url="#"
+          data-pages="assets/feed/2026-02-08-sample-post-09/p01.jpg|assets/feed/2026-02-08-sample-post-09/p02.jpg"
+          data-count="2"
+          data-more="0"
+          data-kind="Casebook"
+          data-title="Sample casebook"
+          data-date="February 2026"
+          data-line="Placeholder summary for a sample casebook launch.">
+          <img class="band__shot" src="assets/feed/2026-02-08-sample-post-09/thumb.jpg" alt="" loading="lazy" width="300" height="375" decoding="async">
+          <span class="band__meta">
+            <span class="band__kind">Casebook</span>
+            <span class="band__title">Sample casebook</span>
+            <span class="band__date">February 2026</span>
+          </span>
+        </button>
+      </li>
+      <li class="band__item">
+        <button class="band__card" type="button"
+          data-slug="2025-11-12-sample-post-10"
+          data-url="#"
+          data-pages="assets/feed/2025-11-12-sample-post-10/p01.jpg|assets/feed/2025-11-12-sample-post-10/p02.jpg"
+          data-count="2"
+          data-more="0"
+          data-kind="Session"
+          data-title="Sample session one"
+          data-date="November 2025"
+          data-line="Placeholder summary for a sample workshop.">
+          <img class="band__shot" src="assets/feed/2025-11-12-sample-post-10/thumb.jpg" alt="" loading="lazy" width="300" height="375" decoding="async">
+          <span class="band__meta">
+            <span class="band__kind">Session</span>
+            <span class="band__title">Sample session one</span>
+            <span class="band__date">November 2025</span>
+          </span>
+        </button>
+      </li>
+      <li class="band__item">
+        <button class="band__card" type="button"
+          data-slug="2025-09-09-sample-post-11"
+          data-url="#"
+          data-pages="assets/feed/2025-09-09-sample-post-11/p01.jpg|assets/feed/2025-09-09-sample-post-11/p02.jpg|assets/feed/2025-09-09-sample-post-11/p03.jpg"
+          data-count="3"
+          data-more="0"
+          data-kind="Edition"
+          data-title="Sample edition 1"
+          data-date="September 2025"
+          data-line="Placeholder summary for the first sample edition of the bulletin.">
+          <img class="band__shot" src="assets/feed/2025-09-09-sample-post-11/thumb.jpg" alt="" loading="lazy" width="300" height="375" decoding="async">
+          <span class="band__meta">
+            <span class="band__kind">Edition</span>
+            <span class="band__title">Sample edition 1</span>
+            <span class="band__date">September 2025</span>
+          </span>
+        </button>
+      </li>
+      <li class="band__item">
+        <button class="band__card" type="button"
+          data-slug="2025-08-24-sample-post-12"
+          data-url="#"
+          data-pages="assets/feed/2025-08-24-sample-post-12/p01.jpg|assets/feed/2025-08-24-sample-post-12/p02.jpg"
+          data-count="2"
+          data-more="0"
+          data-kind="Event"
+          data-title="Sample event"
+          data-date="August 2025"
+          data-line="Placeholder summary for a sample event.">
+          <img class="band__shot" src="assets/feed/2025-08-24-sample-post-12/thumb.jpg" alt="" loading="lazy" width="300" height="375" decoding="async">
+          <span class="band__meta">
+            <span class="band__kind">Event</span>
+            <span class="band__title">Sample event</span>
+            <span class="band__date">August 2025</span>
+          </span>
+        </button>
+      </li>
+      <li class="band__item" aria-hidden="true">
+        <button class="band__card" type="button" tabindex="-1"
+          data-slug="2026-08-14-sample-post-01"
+          data-url="#"
+          data-pages="assets/feed/2026-08-14-sample-post-01/p01.jpg|assets/feed/2026-08-14-sample-post-01/p02.jpg|assets/feed/2026-08-14-sample-post-01/p03.jpg|assets/feed/2026-08-14-sample-post-01/p04.jpg"
+          data-count="4"
+          data-more="0"
+          data-kind="Edition"
+          data-title="Sample edition 4"
+          data-date="August 2026"
+          data-line="Placeholder summary for the fourth sample edition of the bulletin.">
+          <img class="band__shot" src="assets/feed/2026-08-14-sample-post-01/thumb.jpg" alt="" loading="lazy" width="300" height="375" decoding="async">
+          <span class="band__meta">
+            <span class="band__kind">Edition</span>
+            <span class="band__title">Sample edition 4</span>
+            <span class="band__date">August 2026</span>
+          </span>
+        </button>
+      </li>
+      <li class="band__item" aria-hidden="true">
+        <button class="band__card" type="button" tabindex="-1"
+          data-slug="2026-08-11-sample-post-02"
+          data-url="#"
+          data-pages="assets/feed/2026-08-11-sample-post-02/p01.jpg"
+          data-count="1"
+          data-more="0"
+          data-kind="Session"
+          data-title="Sample session two"
+          data-date="August 2026"
+          data-line="Placeholder summary for a sample speaker session.">
+          <img class="band__shot" src="assets/feed/2026-08-11-sample-post-02/thumb.jpg" alt="" loading="lazy" width="300" height="375" decoding="async">
+          <span class="band__meta">
+            <span class="band__kind">Session</span>
+            <span class="band__title">Sample session two</span>
+            <span class="band__date">August 2026</span>
+          </span>
+        </button>
+      </li>
+      <li class="band__item" aria-hidden="true">
+        <button class="band__card" type="button" tabindex="-1"
+          data-slug="2026-08-02-sample-post-03"
+          data-url="#"
+          data-pages="assets/feed/2026-08-02-sample-post-03/p01.jpg|assets/feed/2026-08-02-sample-post-03/p02.jpg|assets/feed/2026-08-02-sample-post-03/p03.jpg"
+          data-count="3"
+          data-more="0"
+          data-kind="Series"
+          data-title="Sample series, episode 2"
+          data-date="August 2026"
+          data-line="Placeholder summary for the second episode of a sample concept series.">
+          <img class="band__shot" src="assets/feed/2026-08-02-sample-post-03/thumb.jpg" alt="" loading="lazy" width="300" height="375" decoding="async">
+          <span class="band__meta">
+            <span class="band__kind">Series</span>
+            <span class="band__title">Sample series, episode 2</span>
+            <span class="band__date">August 2026</span>
+          </span>
+        </button>
+      </li>
+      <li class="band__item" aria-hidden="true">
+        <button class="band__card" type="button" tabindex="-1"
+          data-slug="2026-07-23-sample-post-04"
+          data-url="#"
+          data-pages="assets/feed/2026-07-23-sample-post-04/p01.jpg|assets/feed/2026-07-23-sample-post-04/p02.jpg|assets/feed/2026-07-23-sample-post-04/p03.jpg"
+          data-count="3"
+          data-more="0"
+          data-kind="Series"
+          data-title="Sample series, episode 1"
+          data-date="July 2026"
+          data-line="Placeholder summary for the first episode of a sample concept series.">
+          <img class="band__shot" src="assets/feed/2026-07-23-sample-post-04/thumb.jpg" alt="" loading="lazy" width="300" height="375" decoding="async">
+          <span class="band__meta">
+            <span class="band__kind">Series</span>
+            <span class="band__title">Sample series, episode 1</span>
+            <span class="band__date">July 2026</span>
+          </span>
+        </button>
+      </li>
+      <li class="band__item" aria-hidden="true">
+        <button class="band__card" type="button" tabindex="-1"
+          data-slug="2026-07-22-sample-post-05"
+          data-url="#"
+          data-pages="assets/feed/2026-07-22-sample-post-05/p01.jpg"
+          data-count="1"
+          data-more="0"
+          data-kind="The team"
+          data-title="Sample team update"
+          data-date="July 2026"
+          data-line="Placeholder summary for a sample team announcement.">
+          <img class="band__shot" src="assets/feed/2026-07-22-sample-post-05/thumb.jpg" alt="" loading="lazy" width="300" height="375" decoding="async">
+          <span class="band__meta">
+            <span class="band__kind">The team</span>
+            <span class="band__title">Sample team update</span>
+            <span class="band__date">July 2026</span>
+          </span>
+        </button>
+      </li>
+      <li class="band__item" aria-hidden="true">
+        <button class="band__card" type="button" tabindex="-1"
+          data-slug="2026-03-31-sample-post-06"
+          data-url="#"
+          data-pages="assets/feed/2026-03-31-sample-post-06/p01.jpg|assets/feed/2026-03-31-sample-post-06/p02.jpg|assets/feed/2026-03-31-sample-post-06/p03.jpg"
+          data-count="3"
+          data-more="0"
+          data-kind="Live project"
+          data-title="Sample project one"
+          data-date="March 2026"
+          data-line="Placeholder summary for the first sample live project.">
+          <img class="band__shot" src="assets/feed/2026-03-31-sample-post-06/thumb.jpg" alt="" loading="lazy" width="300" height="375" decoding="async">
+          <span class="band__meta">
+            <span class="band__kind">Live project</span>
+            <span class="band__title">Sample project one</span>
+            <span class="band__date">March 2026</span>
+          </span>
+        </button>
+      </li>
+      <li class="band__item" aria-hidden="true">
+        <button class="band__card" type="button" tabindex="-1"
+          data-slug="2026-03-24-sample-post-07"
+          data-url="#"
+          data-pages="assets/feed/2026-03-24-sample-post-07/p01.jpg|assets/feed/2026-03-24-sample-post-07/p02.jpg|assets/feed/2026-03-24-sample-post-07/p03.jpg"
+          data-count="3"
+          data-more="0"
+          data-kind="Live project"
+          data-title="Sample project two"
+          data-date="March 2026"
+          data-line="Placeholder summary for the second sample live project.">
+          <img class="band__shot" src="assets/feed/2026-03-24-sample-post-07/thumb.jpg" alt="" loading="lazy" width="300" height="375" decoding="async">
+          <span class="band__meta">
+            <span class="band__kind">Live project</span>
+            <span class="band__title">Sample project two</span>
+            <span class="band__date">March 2026</span>
+          </span>
+        </button>
+      </li>
+      <li class="band__item" aria-hidden="true">
+        <button class="band__card" type="button" tabindex="-1"
+          data-slug="2026-03-23-sample-post-08"
+          data-url="#"
+          data-pages="assets/feed/2026-03-23-sample-post-08/p01.jpg|assets/feed/2026-03-23-sample-post-08/p02.jpg|assets/feed/2026-03-23-sample-post-08/p03.jpg"
+          data-count="3"
+          data-more="0"
+          data-kind="Live project"
+          data-title="Sample project three"
+          data-date="March 2026"
+          data-line="Placeholder summary for the third sample live project.">
+          <img class="band__shot" src="assets/feed/2026-03-23-sample-post-08/thumb.jpg" alt="" loading="lazy" width="300" height="375" decoding="async">
+          <span class="band__meta">
+            <span class="band__kind">Live project</span>
+            <span class="band__title">Sample project three</span>
+            <span class="band__date">March 2026</span>
+          </span>
+        </button>
+      </li>
+      <li class="band__item" aria-hidden="true">
+        <button class="band__card" type="button" tabindex="-1"
+          data-slug="2026-02-08-sample-post-09"
+          data-url="#"
+          data-pages="assets/feed/2026-02-08-sample-post-09/p01.jpg|assets/feed/2026-02-08-sample-post-09/p02.jpg"
+          data-count="2"
+          data-more="0"
+          data-kind="Casebook"
+          data-title="Sample casebook"
+          data-date="February 2026"
+          data-line="Placeholder summary for a sample casebook launch.">
+          <img class="band__shot" src="assets/feed/2026-02-08-sample-post-09/thumb.jpg" alt="" loading="lazy" width="300" height="375" decoding="async">
+          <span class="band__meta">
+            <span class="band__kind">Casebook</span>
+            <span class="band__title">Sample casebook</span>
+            <span class="band__date">February 2026</span>
+          </span>
+        </button>
+      </li>
+      <li class="band__item" aria-hidden="true">
+        <button class="band__card" type="button" tabindex="-1"
+          data-slug="2025-11-12-sample-post-10"
+          data-url="#"
+          data-pages="assets/feed/2025-11-12-sample-post-10/p01.jpg|assets/feed/2025-11-12-sample-post-10/p02.jpg"
+          data-count="2"
+          data-more="0"
+          data-kind="Session"
+          data-title="Sample session one"
+          data-date="November 2025"
+          data-line="Placeholder summary for a sample workshop.">
+          <img class="band__shot" src="assets/feed/2025-11-12-sample-post-10/thumb.jpg" alt="" loading="lazy" width="300" height="375" decoding="async">
+          <span class="band__meta">
+            <span class="band__kind">Session</span>
+            <span class="band__title">Sample session one</span>
+            <span class="band__date">November 2025</span>
+          </span>
+        </button>
+      </li>
+      <li class="band__item" aria-hidden="true">
+        <button class="band__card" type="button" tabindex="-1"
+          data-slug="2025-09-09-sample-post-11"
+          data-url="#"
+          data-pages="assets/feed/2025-09-09-sample-post-11/p01.jpg|assets/feed/2025-09-09-sample-post-11/p02.jpg|assets/feed/2025-09-09-sample-post-11/p03.jpg"
+          data-count="3"
+          data-more="0"
+          data-kind="Edition"
+          data-title="Sample edition 1"
+          data-date="September 2025"
+          data-line="Placeholder summary for the first sample edition of the bulletin.">
+          <img class="band__shot" src="assets/feed/2025-09-09-sample-post-11/thumb.jpg" alt="" loading="lazy" width="300" height="375" decoding="async">
+          <span class="band__meta">
+            <span class="band__kind">Edition</span>
+            <span class="band__title">Sample edition 1</span>
+            <span class="band__date">September 2025</span>
+          </span>
+        </button>
+      </li>
+      <li class="band__item" aria-hidden="true">
+        <button class="band__card" type="button" tabindex="-1"
+          data-slug="2025-08-24-sample-post-12"
+          data-url="#"
+          data-pages="assets/feed/2025-08-24-sample-post-12/p01.jpg|assets/feed/2025-08-24-sample-post-12/p02.jpg"
+          data-count="2"
+          data-more="0"
+          data-kind="Event"
+          data-title="Sample event"
+          data-date="August 2025"
+          data-line="Placeholder summary for a sample event.">
+          <img class="band__shot" src="assets/feed/2025-08-24-sample-post-12/thumb.jpg" alt="" loading="lazy" width="300" height="375" decoding="async">
+          <span class="band__meta">
+            <span class="band__kind">Event</span>
+            <span class="band__title">Sample event</span>
+            <span class="band__date">August 2025</span>
+          </span>
+        </button>
+      </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- The lobby. Photographs pinned to a lit wall, generated from
+       assets/lobby/stills.json (sample data). -->
+  <section class="lobby" aria-labelledby="lobby-h">
+    <div class="lobby__gate" aria-hidden="true"></div>
+    <div class="lobby__dust" aria-hidden="true"></div>
+
+    <div class="lobby__inner">
+      <h2 class="sr-only" id="lobby-h">The society</h2>
+
+      <p class="lobby__lede">We are <strong>The Society</strong>, a sample student society.
+      This sentence is placeholder copy standing in for a short introduction to who the
+      society is and what it does.</p>
+
+      <ul class="lobby__strip">
+        <li class="lobby__still" style="--tilt:-3.1deg; --drop:0.5rem">
+          <a class="lobby__print" href="#" rel="noopener">
+            <img src="assets/lobby/still-01.jpg" alt="Sample photo one, placeholder caption" width="620" height="1101" loading="lazy" decoding="async">
+          </a>
+          <span class="lobby__cap">
+            <span class="lobby__capline">Sample photo one, placeholder caption</span>
+            <span class="lobby__capwhen">Sample date</span>
+          </span>
+        </li>
+        <li class="lobby__still" style="--tilt:2.2deg; --drop:-0.7rem">
+          <a class="lobby__print" href="#" rel="noopener">
+            <img src="assets/lobby/still-02.jpg" alt="Sample photo two, placeholder caption" width="620" height="1105" loading="lazy" decoding="async">
+          </a>
+          <span class="lobby__cap">
+            <span class="lobby__capline">Sample photo two, placeholder caption</span>
+            <span class="lobby__capwhen">Sample date</span>
+          </span>
+        </li>
+        <li class="lobby__still" style="--tilt:-1.4deg; --drop:0.9rem">
+          <a class="lobby__print" href="#" rel="noopener">
+            <img src="assets/lobby/still-03.jpg" alt="Sample photo three, placeholder caption" width="620" height="1119" loading="lazy" decoding="async">
+          </a>
+          <span class="lobby__cap">
+            <span class="lobby__capline">Sample photo three, placeholder caption</span>
+            <span class="lobby__capwhen">Sample date</span>
+          </span>
+        </li>
+        <li class="lobby__still" style="--tilt:3.4deg; --drop:-0.3rem">
+          <a class="lobby__print" href="#" rel="noopener">
+            <img src="assets/lobby/still-04.jpg" alt="Sample photo four, placeholder caption" width="620" height="1102" loading="lazy" decoding="async">
+          </a>
+          <span class="lobby__cap">
+            <span class="lobby__capline">Sample photo four, placeholder caption</span>
+            <span class="lobby__capwhen">Sample date</span>
+          </span>
+        </li>
+        <li class="lobby__still" style="--tilt:-2.6deg; --drop:0.2rem">
+          <a class="lobby__print" href="#" rel="noopener">
+            <img src="assets/lobby/still-05.jpg" alt="Sample photo five, placeholder caption" width="620" height="465" loading="lazy" decoding="async">
+          </a>
+          <span class="lobby__cap">
+            <span class="lobby__capline">Sample photo five, placeholder caption</span>
+            <span class="lobby__capwhen">Sample date</span>
+          </span>
+        </li>
+        <li class="lobby__still" style="--tilt:1.8deg; --drop:-0.9rem">
+          <a class="lobby__print" href="#" rel="noopener">
+            <img src="assets/lobby/still-06.jpg" alt="Sample photo six, placeholder caption" width="620" height="413" loading="lazy" decoding="async">
+          </a>
+          <span class="lobby__cap">
+            <span class="lobby__capline">Sample photo six, placeholder caption</span>
+            <span class="lobby__capwhen">Sample date</span>
+          </span>
+        </li>
+        <li class="lobby__still" style="--tilt:-3.6deg; --drop:0.6rem">
+          <a class="lobby__print" href="#" rel="noopener">
+            <img src="assets/lobby/still-07.jpg" alt="Sample photo seven, placeholder caption" width="620" height="1343" loading="lazy" decoding="async">
+          </a>
+          <span class="lobby__cap">
+            <span class="lobby__capline">Sample photo seven, placeholder caption</span>
+            <span class="lobby__capwhen">Sample date</span>
+          </span>
+        </li>
+        <li class="lobby__still" style="--tilt:2.6deg; --drop:-0.4rem">
+          <a class="lobby__print" href="#" rel="noopener">
+            <img src="assets/lobby/still-08.jpg" alt="Sample photo eight, placeholder caption" width="620" height="620" loading="lazy" decoding="async">
+          </a>
+          <span class="lobby__cap">
+            <span class="lobby__capline">Sample photo eight, placeholder caption</span>
+            <span class="lobby__capwhen">Sample date</span>
+          </span>
+        </li>
+      </ul>
+
+      <div class="lobby__slot">
+        <p class="lobby__rest">
+          <a href="society.html">Our people</a>
+          <a href="work.html">Our campaigns</a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- The board. A split-flap results board; each row opens its project below
+       and the deck opens in the edition reader. Generated from
+       assets/acts/acts.json (sample data). -->
+  <section class="cases" aria-labelledby="cases-h">
+    <div class="cases__inner">
+      <p class="cases__eyebrow">What we have run for brands</p>
+      <h2 class="cases__title" id="cases-h">The board</h2>
+      <p class="cases__lede">Three sample projects. Every number on this board is placeholder
+      data, and each one shows the sample sentence it is quoted from.</p>
+
+      <div class="board">
+        <div class="board__head" aria-hidden="true">
+          <span class="board__cell board__cell--client">Client</span>
+          <span class="board__cell board__cell--ran">Ran</span>
+          <span class="board__cell board__cell--what">What we did</span>
+          <span class="board__cell board__cell--res">Result</span>
+          <span class="board__cell board__cell--unit"></span>
+        </div>
+        <ul class="board__rows">
+          <li class="board__row">
+            <button class="board__rowbtn" type="button" data-case="project-one"
+                    aria-controls="case-project-one">
+              <span class="board__lamp" aria-hidden="true"></span>
+              <span class="board__cell board__cell--client" data-flap="BRAND ONE"></span>
+              <span class="board__cell board__cell--ran">Oct 2025</span>
+              <span class="board__cell board__cell--what">a sample on-ground campaign</span>
+              <span class="board__cell board__cell--res" data-flap="1,000+"></span>
+              <span class="board__cell board__cell--unit">sample metric one</span>
+            </button>
+          </li>
+          <li class="board__row">
+            <button class="board__rowbtn" type="button" data-case="project-two"
+                    aria-controls="case-project-two">
+              <span class="board__lamp" aria-hidden="true"></span>
+              <span class="board__cell board__cell--client" data-flap="BRAND TWO"></span>
+              <span class="board__cell board__cell--ran">Aug to Dec 2025</span>
+              <span class="board__cell board__cell--what">sample campus activations</span>
+              <span class="board__cell board__cell--res" data-flap="2,000+"></span>
+              <span class="board__cell board__cell--unit">sample metric one</span>
+            </button>
+          </li>
+          <li class="board__row">
+            <button class="board__rowbtn" type="button" data-case="project-three"
+                    aria-controls="case-project-three">
+              <span class="board__lamp" aria-hidden="true"></span>
+              <span class="board__cell board__cell--client" data-flap="BRAND THREE"></span>
+              <span class="board__cell board__cell--ran">Mar 2026</span>
+              <span class="board__cell board__cell--what">a sample product launch</span>
+              <span class="board__cell board__cell--res" data-flap="3,000+"></span>
+              <span class="board__cell board__cell--unit">sample metric three</span>
+            </button>
+          </li>
+        </ul>
+      </div>
+
+      <div class="cases__show">
+        <div class="deckflow" role="group" aria-label="The three project decks">
+          <button class="deckflow__slide" type="button" data-case="project-one"
+                  aria-label="Brand One, the project deck">
+            <img src="assets/acts/project-one.jpg" alt="" width="560" height="700"
+                 loading="lazy" decoding="async">
+          </button>
+          <button class="deckflow__slide" type="button" data-case="project-two"
+                  aria-label="Brand Two, the project deck">
+            <img src="assets/acts/project-two.jpg" alt="" width="560" height="700"
+                 loading="lazy" decoding="async">
+          </button>
+          <button class="deckflow__slide" type="button" data-case="project-three"
+                  aria-label="Brand Three, the project deck">
+            <img src="assets/acts/project-three.jpg" alt="" width="560" height="700"
+                 loading="lazy" decoding="async">
+          </button>
+        </div>
+        <div class="cases__read">
+        <div class="case is-on" id="case-project-one" data-case="project-one">
+          <div class="case__text">
+            <h3 class="case__brand">Brand One</h3>
+            <p class="case__what">a sample consumer brand</p>
+            <p class="case__line">Placeholder description of the work done for Brand One. This sentence stands in for a short account of the campaign.</p>
+          <ul class="case__figures">
+            <li class="case__fig">
+              <button class="case__figbtn" type="button">
+                <span class="case__n">1,000+</span>
+                <span class="case__of">sample metric one</span>
+              </button>
+              <span class="case__src">
+                <span class="case__srcquote">&#8220;1,000+ placeholder quote describing sample metric one&#8221;</span>
+                <a class="case__srcfrom" href="#" rel="noopener">Brand One sample deck</a>
+              </span>
+            </li>
+            <li class="case__fig">
+              <button class="case__figbtn" type="button">
+                <span class="case__n">100+</span>
+                <span class="case__of">sample metric two</span>
+              </button>
+              <span class="case__src">
+                <span class="case__srcquote">&#8220;100+ placeholder quote describing sample metric two&#8221;</span>
+                <a class="case__srcfrom" href="#" rel="noopener">Brand One sample deck</a>
+              </span>
+            </li>
+          </ul>
+          <p class="case__coda">Placeholder follow-up note about Brand One.
+            <a class="case__codafrom" href="#" rel="noopener">Sample post</a>
+          </p>
+          <a class="case__open" href="#read/case1">Read the five page deck</a>
+          </div>
+        </div>
+        <div class="case" id="case-project-two" data-case="project-two">
+          <div class="case__text">
+            <h3 class="case__brand">Brand Two</h3>
+            <p class="case__what">a sample electronics brand</p>
+            <p class="case__line">Placeholder description of the work done for Brand Two. This sentence stands in for a short account of the campaign.</p>
+          <ul class="case__figures">
+            <li class="case__fig">
+              <button class="case__figbtn" type="button">
+                <span class="case__n">2,000+</span>
+                <span class="case__of">sample metric one</span>
+              </button>
+              <span class="case__src">
+                <span class="case__srcquote">&#8220;2,000+ placeholder quote describing sample metric one&#8221;</span>
+                <a class="case__srcfrom" href="#" rel="noopener">Brand Two sample deck</a>
+              </span>
+            </li>
+            <li class="case__fig">
+              <button class="case__figbtn" type="button">
+                <span class="case__n">200+</span>
+                <span class="case__of">sample metric two</span>
+              </button>
+              <span class="case__src">
+                <span class="case__srcquote">&#8220;200+ placeholder quote describing sample metric two&#8221;</span>
+                <a class="case__srcfrom" href="#" rel="noopener">Brand Two sample deck</a>
+              </span>
+            </li>
+          </ul>
+          <a class="case__open" href="#read/case2">Read the five page deck</a>
+          </div>
+        </div>
+        <div class="case" id="case-project-three" data-case="project-three">
+          <div class="case__text">
+            <h3 class="case__brand">Brand Three</h3>
+            <p class="case__what">a sample snacking brand</p>
+            <p class="case__line">Placeholder description of the work done for Brand Three. This sentence stands in for a short account of the campaign.</p>
+          <ul class="case__figures">
+            <li class="case__fig">
+              <button class="case__figbtn" type="button">
+                <span class="case__n">300+</span>
+                <span class="case__of">sample metric one</span>
+              </button>
+              <span class="case__src">
+                <span class="case__srcquote">&#8220;300+ placeholder quote describing sample metric one&#8221;</span>
+                <a class="case__srcfrom" href="#" rel="noopener">Brand Three sample deck</a>
+              </span>
+            </li>
+            <li class="case__fig">
+              <button class="case__figbtn" type="button">
+                <span class="case__n">30+</span>
+                <span class="case__of">sample metric two</span>
+              </button>
+              <span class="case__src">
+                <span class="case__srcquote">&#8220;30+ placeholder quote describing sample metric two&#8221;</span>
+                <a class="case__srcfrom" href="#" rel="noopener">Brand Three sample deck</a>
+              </span>
+            </li>
+            <li class="case__fig">
+              <button class="case__figbtn" type="button">
+                <span class="case__n">3,000+</span>
+                <span class="case__of">sample metric three</span>
+              </button>
+              <span class="case__src">
+                <span class="case__srcquote">&#8220;3,000+ placeholder quote describing sample metric three&#8221;</span>
+                <a class="case__srcfrom" href="#" rel="noopener">Brand Three sample deck</a>
+              </span>
+            </li>
+          </ul>
+          <p class="case__coda">Placeholder follow-up note about Brand Three.
+            <a class="case__codafrom" href="#" rel="noopener">Sample post</a>
+          </p>
+          <a class="case__open" href="#read/case3">Read the five page deck</a>
+          </div>
+        </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- The one sheet. The flagship competition, printed as a screen-printed
+       poster: one enormous word, a cream echo below the horizon sliced into
+       16 bands that drift apart. No JavaScript in this section. -->
+  <section class="summit" aria-labelledby="mrg-h">
+    <div class="summit__sky">
+      <div class="summit__sun" aria-hidden="true"></div>
+      <div class="summit__inner">
+        <p class="summit__head">
+          <span>The Society &middot; a sample student society</span>
+          <span>00 &middot; 00 &middot; 0000</span>
+        </p>
+      </div>
+      <div class="summit__inner">
+        <p class="summit__tag">&#8220;Placeholder tagline for the sample competition.&#8221;</p>
+        <div class="summit__word">
+          <h2 class="summit__title" id="mrg-h">SUMMIT</h2>
+        </div>
+      </div>
+    </div>
+
+    <div class="summit__ground">
+      <div class="summit__inner">
+        <div class="summit__echo" aria-hidden="true">
+          <span class="summit__slice" style="clip-path:inset(0.0% 0 93.5% 0);--amp:18.1;--dur:2.05s;--delay:-0.0s">SUMMIT</span>
+          <span class="summit__slice" style="clip-path:inset(6.0% 0 87.25% 0);--amp:16.22;--dur:2.63s;--delay:-0.4s">SUMMIT</span>
+          <span class="summit__slice" style="clip-path:inset(12.25% 0 81.0% 0);--amp:14.43;--dur:3.21s;--delay:-0.8s">SUMMIT</span>
+          <span class="summit__slice" style="clip-path:inset(18.5% 0 74.75% 0);--amp:12.73;--dur:3.28s;--delay:-1.2s">SUMMIT</span>
+          <span class="summit__slice" style="clip-path:inset(24.75% 0 68.5% 0);--amp:11.13;--dur:3.86s;--delay:-1.16s">SUMMIT</span>
+          <span class="summit__slice" style="clip-path:inset(31.0% 0 62.25% 0);--amp:9.63;--dur:2.39s;--delay:-1.56s">SUMMIT</span>
+          <span class="summit__slice" style="clip-path:inset(37.25% 0 56.0% 0);--amp:8.23;--dur:2.46s;--delay:-1.96s">SUMMIT</span>
+          <span class="summit__slice" style="clip-path:inset(43.5% 0 49.75% 0);--amp:6.94;--dur:3.04s;--delay:-2.36s">SUMMIT</span>
+          <span class="summit__slice" style="clip-path:inset(49.75% 0 43.5% 0);--amp:5.75;--dur:3.62s;--delay:-2.32s">SUMMIT</span>
+          <span class="summit__slice" style="clip-path:inset(56.0% 0 37.25% 0);--amp:4.68;--dur:3.69s;--delay:-2.72s">SUMMIT</span>
+          <span class="summit__slice" style="clip-path:inset(62.25% 0 31.0% 0);--amp:3.73;--dur:2.22s;--delay:-3.12s">SUMMIT</span>
+          <span class="summit__slice" style="clip-path:inset(68.5% 0 24.75% 0);--amp:2.9;--dur:2.8s;--delay:-3.52s">SUMMIT</span>
+          <span class="summit__slice" style="clip-path:inset(74.75% 0 18.5% 0);--amp:2.2;--dur:2.87s;--delay:-3.48s">SUMMIT</span>
+          <span class="summit__slice" style="clip-path:inset(81.0% 0 12.25% 0);--amp:1.65;--dur:3.45s;--delay:-3.88s">SUMMIT</span>
+          <span class="summit__slice" style="clip-path:inset(87.25% 0 6.0% 0);--amp:1.27;--dur:4.03s;--delay:-4.28s">SUMMIT</span>
+          <span class="summit__slice" style="clip-path:inset(93.5% 0 0.0% 0);--amp:1.1;--dur:2.05s;--delay:-4.68s">SUMMIT</span>
+        </div>
+
+        <p class="summit__sub">The Annual Flagship Competition (sample)</p>
+        <p class="summit__slug"><b>Sample date</b> <i>&middot;</i> Doors <b>00:00</b> <i>&middot;</i> <b>Sample College, Sample University</b> <i>&middot;</i> Prize pool <b>to be announced</b> <i>&middot;</i> <b>Open to all entrants</b> <i>&middot;</i> Entries close <b>on a sample date</b></p>
+
+        <div class="summit__rule" aria-hidden="true"></div>
+
+        <div class="summit__foot">
+          <a class="summit__stamp" href="#" rel="noopener">
+            <svg viewBox="0 0 41 41" width="41" height="41" role="img" aria-label="A decorative placeholder mark" shape-rendering="crispEdges"><path fill-rule="evenodd" d="M2 2h9v9h-9zM4 4v5h5v-5zM5 5h3v3h-3zM30 2h9v9h-9zM32 4v5h5v-5zM33 5h3v3h-3zM2 30h9v9h-9zM4 32v5h5v-5zM5 33h3v3h-3zM16 16h9v9h-9zM18 18v5h5v-5zM19 19h3v3h-3zM14 3h2v2h-2zM20 6h2v2h-2zM26 3h2v2h-2zM3 15h2v2h-2zM7 21h2v2h-2zM3 26h2v2h-2zM31 15h2v2h-2zM36 21h2v2h-2zM31 26h2v2h-2zM15 31h2v2h-2zM21 35h2v2h-2zM27 31h2v2h-2zM33 33h4v4h-4z"/></svg>
+            <span class="summit__stampcap">Placeholder mark</span>
+          </a>
+
+          <div>
+            <p class="summit__billing">The Society, a sample student society, presents <i>&middot;</i> Knowledge partners <b>Partner One &amp; Partner Two</b> <i>&middot;</i> Travel partner <b>Partner Three</b> <i>&middot;</i> Associate sponsors <b>Sponsor One &amp; Sponsor Two</b> <i>&middot;</i> Powered by <b>Sample Platform</b></p>
+            <p class="summit__cite">Every line above is placeholder copy,
+              <a href="#" rel="noopener">sample source</a></p>
+          </div>
+
+          <p class="summit__ed">SUMMIT-0000-01<br>
+            <a href="summit.html">The full record</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- The page. How the society teaches, set as a page of newsprint: nameplate,
+       ears, folio bar, headline over a deck, byline, justified columns, a drop cap,
+       halftone figures, a pull quote and a boxed sidebar. -->
+  <section class="news" aria-labelledby="news-h">
+    <div class="news__page">
+      <div class="news__grain" aria-hidden="true"></div>
+
+      <header class="news__plate">
+        <p class="news__ear">The Society<br>a sample society</p>
+        <h2 class="news__name" id="news-h">How we teach</h2>
+        <p class="news__ear news__ear--r">Sample College<br>Sample University</p>
+      </header>
+
+      <p class="news__folio">
+        <span>Session record</span>
+        <span>Sample year</span>
+        <span>Sample sessions, one casebook</span>
+      </p>
+
+      <div class="news__lead">
+        <p class="news__kicker">The case method</p>
+        <h3 class="news__hed">A placeholder headline about teaching</h3>
+        <p class="news__deck">Placeholder deck. This line stands in for a short summary of
+        the sessions the society ran and the casebook it published.</p>
+        <p class="news__byline">By The Society</p>
+      </div>
+
+      <figure class="news__leadfig">
+        <span class="news__screen">
+          <img src="assets/placeholders/landscape-1.jpg" alt="Placeholder photograph"
+               width="760" height="570" loading="lazy" decoding="async">
+        </span>
+        <figcaption>Placeholder caption for a session photograph. <span class="news__credit">The Society</span></figcaption>
+      </figure>
+
+      <div class="news__cols" lang="en">
+        <p class="news__first"><span class="news__place">Sample City.</span> Lorem ipsum
+        dolor sit amet, consectetur adipiscing elit. In a sample session the society hosted
+        <a class="news__ref" href="#" rel="noopener">Guest Speaker One</a>, a sample
+        practitioner, to talk about a sample topic. Sed do eiusmod tempor incididunt ut
+        labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+        ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+
+        <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
+        fugiat nulla pariatur. This paragraph is placeholder text.</p>
+
+        <h4 class="news__sub">A sample casebook</h4>
+
+        <p>The society published <a class="news__ref" href="#" rel="noopener">The Casebook</a>,
+        a sample marketing casebook. Excepteur sint occaecat cupidatat non proident, sunt in
+        culpa qui officia deserunt mollit anim id est laborum.</p>
+
+        <p>Curabitur pretium tincidunt lacus. <a class="news__ref" href="#" rel="noopener">Guest
+        Speaker Two</a>, a sample industry guest, contributed an interview. Nulla gravida orci
+        a odio, et tempus feugiat. The work was guided by Staff Member One, the sample faculty
+        convenor.</p>
+
+        <blockquote class="news__pull">
+          <p>A placeholder pull quote, set large across the column.</p>
+          <cite><a class="news__ref" href="#" rel="noopener">The Series, episode 1</a></cite>
+        </blockquote>
+
+        <h4 class="news__sub">The concepts, one at a time</h4>
+
+        <p><a class="news__ref" href="#" rel="noopener">The Series</a> is a sample concept
+        series. Each episode takes one idea and explains it against a familiar example.
+        Integer in mauris eu nibh euismod gravida.</p>
+
+        <h4 class="news__sub">And then the practical part</h4>
+
+        <p>In a later sample session <a class="news__ref" href="#" rel="noopener">Guest Speaker
+        Three</a> covered case competitions, internships and how to write a CV. Duis ac
+        tellus et risus vulputate vehicula.</p>
+
+        <p>Placeholder closing paragraph. Two sample members, Member One and Member Two,
+        reached the final of a <a class="news__ref" href="#" rel="noopener">sample
+        competition</a>.</p>
+      </div>
+
+      <figure class="news__standfig">
+        <span class="news__screen">
+          <img src="assets/placeholders/landscape-2.jpg" alt="Placeholder photograph"
+               width="1080" height="810" loading="lazy" decoding="async">
+        </span>
+        <figcaption>Placeholder caption for a second photograph. <span class="news__credit">The Society</span></figcaption>
+      </figure>
+
+        <aside class="news__box" aria-label="The sessions, in order">
+          <p class="news__boxhed">The sessions, in order</p>
+          <ul class="news__sesslist">
+            <li class="news__sess">
+              <span class="news__sessdate">Sample date</span>
+              <span class="news__sesswhat">Sample session one<span class="news__sesswho">Guest Speaker One</span></span>
+              <a class="news__sessref" href="#" rel="noopener">Our post</a>
+            </li>
+            <li class="news__sess">
+              <span class="news__sessdate">Sample date</span>
+              <span class="news__sesswhat">The Casebook, sample edition<span class="news__sesswho">with Guest Speaker Two</span></span>
+              <a class="news__sessref" href="#" rel="noopener">Our post</a>
+            </li>
+            <li class="news__sess">
+              <span class="news__sessdate">Sample date</span>
+              <span class="news__sesswhat">The Series, episode 1<span class="news__sesswho">our own concept series</span></span>
+              <a class="news__sessref" href="#" rel="noopener">Our post</a>
+            </li>
+            <li class="news__sess">
+              <span class="news__sessdate">Sample date</span>
+              <span class="news__sesswhat">The Series, episode 2<span class="news__sesswho">our own concept series</span></span>
+              <a class="news__sessref" href="#" rel="noopener">Our post</a>
+            </li>
+            <li class="news__sess">
+              <span class="news__sessdate">Sample date</span>
+              <span class="news__sesswhat">Sample session two<span class="news__sesswho">Guest Speaker Three</span></span>
+              <a class="news__sessref" href="#" rel="noopener">Our post</a>
+            </li>
+          </ul>
+        </aside>
+      <p class="news__jump">Continued: <a href="learn.html">the case method, start to
+      finish</a></p>
+    </div>
+  </section>
+
+  <!-- The company. An end credit roll: the stage sticks, the roll scrolls past,
+       and whoever crosses the reading line is shown on the plate. Names and
+       portraits are placeholders. -->
+  <section class="company" aria-labelledby="co-h">
+    <div class="co__inner">
+      <div class="co__body">
+        <div class="co__stage">
+          <header class="co__head">
+            <p class="co__eyebrow">The people who run it</p>
+            <h2 class="co__title" id="co-h">The company</h2>
+            <p class="co__season">Sample year</p>
+          </header>
+        <div class="co__plate">
+          <div class="co__frame">
+            <img class="co__shot" id="co-shot" src="assets/people/member-01.jpg" alt=""
+                 width="320" height="320" decoding="async">
+          </div>
+          <p class="co__prole" id="co-role">President</p>
+          <p class="co__pname" id="co-name">Member One</p>
+          <p class="co__pnote" id="co-note" hidden></p>
+        </div>
+        </div>
+
+        <div class="co__roll">
+          <div class="co__credit">
+            <p class="co__role">President</p>
+            <ul class="co__names">
+            <li><button class="co__name" type="button"
+                    data-slug="member-01" data-name="Member One" data-role="President"
+                >Member One</button></li>
+            </ul>
+          </div>
+          <div class="co__credit">
+            <p class="co__role">Vice President</p>
+            <ul class="co__names">
+            <li><button class="co__name" type="button"
+                    data-slug="member-02" data-name="Member Two" data-role="Vice President"
+                >Member Two</button></li>
+            </ul>
+          </div>
+          <div class="co__credit">
+            <p class="co__role">General Secretary</p>
+            <ul class="co__names">
+            <li><button class="co__name" type="button"
+                    data-slug="member-03" data-name="Member Three" data-role="General Secretary"
+                >Member Three</button></li>
+            </ul>
+          </div>
+          <div class="co__credit">
+            <p class="co__role">Treasurer</p>
+            <ul class="co__names">
+            <li><button class="co__name" type="button"
+                    data-slug="member-04" data-name="Member Four" data-role="Treasurer"
+                >Member Four</button></li>
+            </ul>
+          </div>
+          <div class="co__credit">
+            <p class="co__role">Deputy Leads</p>
+            <ul class="co__names">
+            <li><button class="co__name" type="button"
+                    data-slug="member-05" data-name="Member Five" data-role="Deputy Leads"
+                >Member Five</button></li>
+            <li><button class="co__name" type="button"
+                    data-slug="member-06" data-name="Member Six" data-role="Deputy Leads"
+                >Member Six</button></li>
+            </ul>
+          </div>
+          <div class="co__credit">
+            <p class="co__role">Research and Content</p>
+            <ul class="co__names">
+            <li><button class="co__name" type="button"
+                    data-slug="member-07" data-name="Member Seven" data-role="Research and Content"
+                >Member Seven</button></li>
+            <li><button class="co__name" type="button"
+                    data-slug="member-08" data-name="Member Eight" data-role="Research and Content"
+                >Member Eight</button></li>
+            </ul>
+          </div>
+          <div class="co__credit">
+            <p class="co__role">Live Projects</p>
+            <ul class="co__names">
+            <li><button class="co__name" type="button"
+                    data-slug="member-09" data-name="Member Nine" data-role="Live Projects"
+                >Member Nine</button></li>
+            <li><button class="co__name" type="button"
+                    data-slug="member-10" data-name="Member Ten" data-role="Live Projects"
+                >Member Ten</button></li>
+            </ul>
+          </div>
+          <div class="co__credit">
+            <p class="co__role">Technical</p>
+            <ul class="co__names">
+            <li><button class="co__name" type="button"
+                    data-slug="member-11" data-name="Member Eleven" data-role="Technical"
+                >Member Eleven</button></li>
+            </ul>
+          </div>
+          <div class="co__credit">
+            <p class="co__role">Publication</p>
+            <ul class="co__names">
+            <li><button class="co__name" type="button"
+                    data-slug="member-12" data-name="Member Twelve" data-role="Publication"
+                >Member Twelve</button></li>
+            </ul>
+          </div>
+
+          <div class="co__credit co__credit--staff">
+            <p class="co__role">Under the convenorship of</p>
+            <p class="co__staff">Staff Member One, Faculty Convenor</p>
+            <p class="co__staff">Staff Member Two, Principal</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="co__join">
+        <h3 class="co__joinhed">Joining us</h3>
+        <p class="co__joincopy">Placeholder recruitment note. This paragraph stands in for
+        details on when and how new members can apply.</p>
+        <p class="co__src">This roll is sample data, and the portraits are
+          <a href="#" rel="noopener">placeholder images</a>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- The footer, as a circuit board: every pad is a real link, and the canvas
+       behind draws the copper traces and the current running along them. -->
+  <footer class="board" aria-labelledby="board-h">
+    <div class="board__inner">
+      <h2 class="board__h" id="board-h">Ways to reach us</h2>
+
+      <div class="board__field" data-board>
+        <canvas class="board__wire" aria-hidden="true"></canvas>
+
+        <div class="board__chip" data-chip>
+          <span class="board__chippins" aria-hidden="true"></span>
+          <span class="board__chipmark">The Society</span>
+          <span class="board__chipsub">A sample student society</span>
+          <span class="board__chippins board__chippins--b" aria-hidden="true"></span>
+        </div>
+
+        <a class="board__pad board__pad--ch" data-pad="ig" href="#" rel="noopener">
+          <span class="board__led" aria-hidden="true"></span>
+          <svg class="board__glyph" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H7zm5 3.5a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9zm0 2a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM17.8 6a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4z"/></svg>
+          <span class="board__padtext">
+            <span class="board__padname">Social one</span>
+            <span class="board__padval">Placeholder link</span>
+          </span>
+        </a>
+        <a class="board__pad board__pad--ch" data-pad="li" href="#" rel="noopener">
+          <span class="board__led" aria-hidden="true"></span>
+          <svg class="board__glyph" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 3.5a2 2 0 1 1 0 4 2 2 0 0 1 0-4zM3 9h3v12H3V9zm5.5 0h2.9v1.6h.04c.4-.75 1.4-1.6 2.9-1.6 3.1 0 3.66 2 3.66 4.6V21h-3v-5.7c0-1.36-.02-3.1-1.9-3.1-1.9 0-2.2 1.47-2.2 3v5.8h-3V9z"/></svg>
+          <span class="board__padtext">
+            <span class="board__padname">Social two</span>
+            <span class="board__padval">Placeholder link</span>
+          </span>
+        </a>
+        <a class="board__pad board__pad--ch" data-pad="mail" href="#">
+          <span class="board__led" aria-hidden="true"></span>
+          <svg class="board__glyph" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 5.5A2.5 2.5 0 0 1 4.5 3h15A2.5 2.5 0 0 1 22 5.5v13a2.5 2.5 0 0 1-2.5 2.5h-15A2.5 2.5 0 0 1 2 18.5v-13zm2.2-.3 7.8 6.2 7.8-6.2a.5.5 0 0 0-.3-.2h-15a.5.5 0 0 0-.3.2zM20 7.4l-7.4 5.9a1 1 0 0 1-1.2 0L4 7.4v11.1c0 .3.2.5.5.5h15c.3 0 .5-.2.5-.5V7.4z"/></svg>
+          <span class="board__padtext">
+            <span class="board__padname">Email</span>
+            <span class="board__padval">Placeholder address</span>
+          </span>
+        </a>
+        <a class="board__pad board__pad--pg" data-pad="work" href="work.html">
+          <span class="board__led" aria-hidden="true"></span>
+          <span class="board__dot" aria-hidden="true"></span>
+          <span class="board__padtext">
+            <span class="board__padname">Campaigns</span>
+            <span class="board__padval">Brand One, Brand Two, Brand Three</span>
+          </span>
+        </a>
+        <a class="board__pad board__pad--pg" data-pad="soc" href="society.html">
+          <span class="board__led" aria-hidden="true"></span>
+          <span class="board__dot" aria-hidden="true"></span>
+          <span class="board__padtext">
+            <span class="board__padname">Who we are</span>
+            <span class="board__padval">The team, the college, the record</span>
+          </span>
+        </a>
+      </div>
+
+      <div class="board__foot">
+        <p class="board__meta">Sample College, Sample University</p>
+      </div>
+    </div>
+  </footer>
+
+</main>
+
+<script type="module" src="theater3d.js"></script>
+<script type="module" src="theater3d-marquee.js"></script>
+<script type="module" src="theater3d-cases.js"></script>
+<script type="module" src="theater3d-company.js"></script>
+<script type="module" src="theater3d-footer.js"></script>
+<script>
+  // If module/CDN fails entirely, the module script never runs; show fallback after a grace period
+  // (the module sets window.__theater3dBooted = true as its first act).
+  setTimeout(function () {
+    if (!window.__theater3dBooted) {
+      document.getElementById('fallback').classList.add('on');
+      document.getElementById('vignette').style.display = 'none';
+    }
+  }, 6000);
+</script>
+</body>
+</html>

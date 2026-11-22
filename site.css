@@ -1,0 +1,532 @@
+
+:root{
+  --oxblood-deep:#400000;
+  --oxblood:#602018;
+  --oxblood-shadow:#380000;
+  --gold:#E8C77A;
+  --gold-dim:#B9975B;
+  --paper:#F8F0D8;
+  --off-white:#F0F0F0;
+  --ink:#2A0A06;
+
+  --font-display:"Noto Serif Display",Georgia,"Times New Roman",serif;
+  --font-read:"Crimson Pro",Georgia,serif;
+  --font-ui:"Montserrat",system-ui,-apple-system,"Segoe UI",sans-serif;
+
+  --measure:65ch;
+  --gutter:clamp(1.15rem,5vw,4rem);
+  --header-h:3.25rem;
+
+  --rule:color-mix(in srgb,var(--gold) 45%,transparent);
+  --rule-ink:color-mix(in srgb,var(--ink) 22%,transparent);
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--font-read);
+  font-size:1.0625rem;      /* 17px mobile → 18px up */
+  line-height:1.62;
+  font-synthesis-weight:none;
+  text-rendering:optimizeLegibility;
+}
+@media (min-width:48rem){ body{font-size:1.125rem} }
+
+img{max-width:100%;display:block}
+a{color:inherit}
+
+/* ---------- shared furniture -------------------------------- */
+
+.eyebrow{
+  font-family:var(--font-ui);
+  font-size:.6875rem;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  font-weight:600;
+  line-height:1.4;
+}
+
+/* library entry: name-rule-to-edge */
+.rule-head{
+  display:flex;align-items:baseline;gap:.9rem;margin:0;
+  font-family:var(--font-display);
+  font-weight:700;line-height:1.04;
+  font-size:clamp(1.9rem,1.1rem + 3.4vw,3.25rem);
+}
+.rule-head::after{
+  content:"";flex:1 1 auto;height:1px;
+  background:currentColor;opacity:.4;transform:translateY(-.3em);
+}
+
+.wrap{ padding-inline:var(--gutter); }
+.limit{ max-width:78rem;margin-inline:auto; }
+
+/* ---------- masthead bar ------------------------------------ */
+
+.topbar{
+  position:sticky;top:0;z-index:30;
+  display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  min-height:var(--header-h);
+  padding-inline:var(--gutter);
+  background:var(--oxblood-deep);
+  color:var(--off-white);
+  border-bottom:1px solid var(--rule);
+}
+.topbar__mark{
+  font-family:var(--font-display);
+  font-stretch:62.5%;
+  font-weight:700;
+  font-size:1.15rem;
+  letter-spacing:.02em;
+  color:var(--gold);
+  text-decoration:none;
+}
+.topbar__mark small{
+  display:block;font-family:var(--font-ui);font-size:.5rem;
+  letter-spacing:.22em;color:var(--off-white);opacity:.75;font-weight:500;
+  margin-top:.1rem;
+}
+.topbar__nav{display:flex;gap:1.1rem}
+.topbar__nav a{
+  font-family:var(--font-ui);font-size:.7rem;letter-spacing:.12em;
+  text-transform:uppercase;text-decoration:none;opacity:.85;
+}
+.topbar__nav a:hover{opacity:1;text-decoration:underline;text-underline-offset:.3em}
+
+/* library entry: context-subbar — always names where you are */
+.subbar{
+  position:sticky;top:var(--header-h);z-index:25;
+  display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:.55rem var(--gutter);
+  background:var(--paper);
+  border-bottom:1px solid var(--rule-ink);
+  font-family:var(--font-ui);font-size:.6875rem;letter-spacing:.13em;
+  text-transform:uppercase;font-weight:600;
+}
+.subbar a{text-decoration:none}
+.subbar a:hover{text-decoration:underline;text-underline-offset:.3em}
+.subbar--dark{background:var(--oxblood-deep);color:var(--off-white);border-color:var(--rule)}
+
+/* ============================================================
+   H1 — the masthead cover
+   ============================================================ */
+
+.cover{
+  position:relative;overflow:hidden;
+  background:var(--oxblood-deep);
+  color:var(--off-white);
+  padding-block:clamp(1.25rem,4vw,2.5rem) clamp(2rem,6vw,4rem);
+  padding-inline:var(--gutter);
+}
+.cover::before{
+  content:"";position:absolute;inset:-20%;
+  background:
+    linear-gradient(107deg,
+      color-mix(in srgb,var(--oxblood) 92%,transparent) 0%,
+      color-mix(in srgb,var(--oxblood-deep) 96%,transparent) 38%,
+      color-mix(in srgb,var(--oxblood) 78%,transparent) 55%,
+      var(--oxblood-shadow) 100%),
+    radial-gradient(120% 80% at 22% 8%, rgba(255,225,180,.10), transparent 60%);
+  pointer-events:none;
+}
+.cover > *{position:relative}
+
+.cover__shoulders{
+  display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding-bottom:.7rem;border-bottom:1px solid var(--rule);
+}
+.cover__crest{
+  width:2.6rem;aspect-ratio:1;flex:none;
+  background-image:url("assets/crest.jpg");
+  background-size:cover;
+  -webkit-mask-image:url("assets/crest-mask.png");
+          mask-image:url("assets/crest-mask.png");
+  -webkit-mask-size:cover;mask-size:cover;
+}
+.cover__society{color:var(--gold);text-align:right}
+
+.cover__eyebrow{
+  margin:clamp(1.25rem,5vw,2.25rem) 0 .35rem;
+  color:var(--off-white);opacity:.9;
+}
+
+/* the masthead: enormous, condensed, cropped tight to the edges */
+.cover__masthead{
+  margin:0;
+  font-family:var(--font-display);
+  font-stretch:62.5%;
+  font-weight:800;
+  color:var(--gold);
+  font-size:clamp(2.6rem,13.1vw,10.5rem);
+  line-height:.82;
+  letter-spacing:-.015em;
+  /* crop: the word runs past the gutter on both sides, like the print cover */
+  margin-inline:calc(var(--gutter) * -1);
+  padding-inline:calc(var(--gutter) * .38);
+  white-space:nowrap;
+}
+.cover__tagline{
+  margin:.85rem 0 0;max-width:32rem;
+  font-family:var(--font-read);font-style:italic;
+  font-size:1.05rem;opacity:.92;
+}
+
+/* cover lines = the real contents of the latest edition */
+.coverlines{
+  margin:clamp(1.6rem,5vw,2.5rem) 0 0;padding:0;list-style:none;
+  border-top:1px solid var(--rule);
+  max-width:44rem;
+}
+.coverlines__head{
+  display:flex;justify-content:space-between;gap:1rem;
+  padding:.65rem 0;color:var(--gold);
+}
+.coverline{border-top:1px solid color-mix(in srgb,var(--gold) 22%,transparent)}
+.coverline a{
+  display:block;padding:.7rem 0;text-decoration:none;
+}
+.coverline__title{
+  font-family:var(--font-display);font-weight:600;
+  font-size:clamp(1.06rem,.95rem + .7vw,1.4rem);
+  line-height:1.24;
+  background-image:linear-gradient(var(--gold),var(--gold));
+  background-size:0% 1px;background-position:0 100%;background-repeat:no-repeat;
+  transition:background-size .32s cubic-bezier(.2,.7,.3,1);
+}
+.coverline a:hover .coverline__title,
+.coverline a:focus-visible .coverline__title{background-size:100% 1px}
+.coverline__by{
+  display:block;margin-top:.28rem;color:var(--gold);opacity:.85;
+}
+
+.cover__foot{
+  display:flex;align-items:flex-end;justify-content:space-between;gap:1rem;
+  margin-top:clamp(1.5rem,5vw,2.5rem);
+  padding-top:.8rem;border-top:1px solid var(--rule);
+}
+.barcode{display:flex;flex-direction:column;align-items:flex-end;gap:.3rem}
+.barcode svg{height:2.4rem;width:auto}
+.barcode__id{
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  font-size:.65rem;letter-spacing:.22em;color:var(--gold);opacity:.9;
+}
+
+/* ============================================================
+   H2 — the dateline. Real numbers, no counters.
+   ============================================================ */
+
+.dateline{
+  background:var(--oxblood);color:var(--off-white);
+  padding:clamp(1rem,3.5vw,1.6rem) var(--gutter);
+  font-family:var(--font-ui);font-size:.78rem;letter-spacing:.1em;
+  text-transform:uppercase;font-weight:500;
+  display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;align-items:baseline;
+}
+.dateline a{
+  text-decoration:none;
+  border-bottom:1px solid color-mix(in srgb,var(--gold) 50%,transparent);
+  padding-bottom:.12em;
+}
+.dateline a:hover{border-color:var(--gold)}
+.dateline b{
+  font-family:var(--font-display);font-stretch:75%;font-weight:700;
+  font-size:1.5em;letter-spacing:0;color:var(--gold);
+  margin-right:.25em;
+}
+
+/* ============================================================
+   H3 — INDEX / INDEX / INDEX
+   ============================================================ */
+
+.section{padding-block:clamp(2.5rem,8vw,5rem)}
+.section--paper{background:var(--paper)}
+
+.stack{margin:0 0 1.6rem}
+.stack__line{
+  display:block;
+  font-family:var(--font-display);font-stretch:62.5%;font-weight:800;
+  text-transform:uppercase;letter-spacing:.02em;line-height:.86;
+  font-size:clamp(2.4rem,11vw,5.5rem);
+}
+.stack__line:nth-child(1){opacity:.16}
+.stack__line:nth-child(2){opacity:.38}
+.stack__line:nth-child(3){opacity:1}
+
+.filters{
+  display:flex;flex-wrap:wrap;gap:.4rem;margin:0 0 1.2rem;padding:0;list-style:none;
+}
+.filters button{
+  font-family:var(--font-ui);font-size:.68rem;letter-spacing:.12em;
+  text-transform:uppercase;font-weight:600;
+  padding:.4rem .7rem;border:1px solid var(--rule-ink);
+  background:transparent;color:inherit;cursor:pointer;border-radius:0;
+}
+.filters button[aria-pressed="true"]{background:var(--oxblood-deep);color:var(--gold);border-color:var(--oxblood-deep)}
+
+.index{list-style:none;margin:0;padding:0;border-top:1px solid var(--rule-ink)}
+.index__row{border-bottom:1px solid var(--rule-ink)}
+.index__row[hidden]{display:none}
+.index__row > a,
+.index__row > .index__inert{
+  display:grid;gap:.15rem .9rem;padding:.85rem 0;text-decoration:none;
+  grid-template-columns:1fr;
+}
+@media (min-width:48rem){
+  .index__row > a,
+  .index__row > .index__inert{
+    grid-template-columns:5.5rem 1fr 14rem;align-items:baseline;
+  }
+}
+.index__ed{font-family:var(--font-ui);font-size:.66rem;letter-spacing:.13em;text-transform:uppercase;opacity:.6}
+.index__title{
+  font-family:var(--font-display);font-weight:600;
+  font-size:1.06rem;line-height:1.3;
+}
+.index__by{
+  font-family:var(--font-ui);font-size:.72rem;letter-spacing:.06em;
+  opacity:.72;
+}
+@media (min-width:48rem){
+  /* the one motion idea: the byline steps in from the margin on approach */
+  .index__by{
+    opacity:.55;transform:translateX(-.35rem);
+    transition:opacity .22s ease,transform .22s ease,color .22s ease;
+    text-align:right;
+  }
+  .index__row:hover .index__by,
+  .index__row:focus-within .index__by{opacity:1;transform:none;color:var(--oxblood)}
+}
+.index__row > a:hover .index__title{text-decoration:underline;text-underline-offset:.22em}
+
+/* the honest gap: recorded but not yet archived */
+.index__row--gap{opacity:.62}
+.index__row--gap .index__title{font-style:italic;font-weight:400}
+.index__note{
+  font-family:var(--font-ui);font-size:.66rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--oxblood);
+}
+
+/* ============================================================
+   H4 — the writers
+   ============================================================ */
+
+.writers{
+  display:flex;flex-wrap:wrap;gap:.15rem 0;margin:0;padding:0;list-style:none;
+  font-family:var(--font-display);
+  font-size:clamp(1.15rem,.9rem + 1.2vw,1.75rem);
+  line-height:1.35;
+}
+.writers li::after{content:" · ";opacity:.4;padding-inline:.35rem}
+.writers li:last-child::after{content:""}
+.writers a{text-decoration:none}
+.writers a:hover{text-decoration:underline;text-underline-offset:.2em}
+.writers .college{
+  font-family:var(--font-ui);font-size:.58em;letter-spacing:.08em;
+  text-transform:uppercase;opacity:.62;margin-left:.35em;
+}
+
+/* ============================================================
+   H5 — three properties, unequal on purpose
+   ============================================================ */
+
+.props{display:grid;gap:1px;background:var(--rule-ink);border-block:1px solid var(--rule-ink)}
+@media (min-width:56rem){ .props{grid-template-columns:1.5fr 1fr 1fr} }
+.prop{background:var(--paper);padding:clamp(1.3rem,4vw,2.2rem)}
+.prop a{text-decoration:none;display:block}
+.prop__name{margin:.2rem 0 .5rem}
+.prop__meta{font-family:var(--font-ui);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;opacity:.62}
+.prop p{margin:.6rem 0 0;font-size:.95rem;max-width:34ch}
+
+/* each property keeps its own typographic register */
+.prop--casebook .prop__name{
+  font-family:var(--font-ui);font-weight:800;text-transform:uppercase;
+  letter-spacing:-.01em;font-size:clamp(2rem,1.2rem + 3vw,3.4rem);line-height:1;
+}
+.prop--bulletin .prop__name{
+  font-family:var(--font-display);font-stretch:62.5%;font-weight:800;
+  text-transform:uppercase;font-size:clamp(1.9rem,1.2rem + 2.6vw,3rem);line-height:.95;
+}
+.prop--series .prop__name{
+  font-family:var(--font-read);font-style:italic;font-weight:600;
+  font-size:clamp(1.7rem,1.1rem + 2.2vw,2.5rem);line-height:1.05;
+}
+
+/* ============================================================
+   H6 — the shelf
+   ============================================================ */
+
+.shelf{
+  background:var(--oxblood-deep);color:var(--off-white);
+  padding-block:clamp(2.5rem,8vw,5rem);
+}
+.shelf__grid{display:grid;gap:1.6rem;align-items:center}
+@media (min-width:52rem){ .shelf__grid{grid-template-columns:8rem 1fr;gap:2.5rem} }
+.shelf__crest{
+  width:6rem;aspect-ratio:1;
+  background-image:url("assets/crest.jpg");
+  background-size:cover;
+  -webkit-mask-image:url("assets/crest-mask.png");
+          mask-image:url("assets/crest-mask.png");
+  -webkit-mask-size:cover;mask-size:cover;
+}
+.shelf blockquote{
+  margin:0;font-family:var(--font-display);font-weight:600;
+  font-size:clamp(1.5rem,1rem + 2.4vw,2.6rem);line-height:1.18;
+  color:var(--gold);text-wrap:balance;
+}
+.shelf cite{
+  display:block;margin-top:.7rem;font-style:normal;
+  font-family:var(--font-ui);font-size:.68rem;letter-spacing:.13em;
+  text-transform:uppercase;opacity:.72;
+}
+.shelf__answer{margin:1.2rem 0 0;max-width:52ch;opacity:.95}
+
+
+.society{display:grid;gap:2rem}
+@media (min-width:56rem){ .society{grid-template-columns:1.15fr 1fr} }
+.roster{margin:.8rem 0 0;padding:0;list-style:none;
+  border-top:1px solid var(--rule-ink);font-size:.98rem}
+.roster li{display:flex;justify-content:space-between;gap:1rem;
+  padding:.42rem 0;border-bottom:1px solid var(--rule-ink)}
+.roster .role{font-family:var(--font-ui);font-size:.66rem;letter-spacing:.12em;
+  text-transform:uppercase;opacity:.62;align-self:center;text-align:right}
+.tagline-list{margin:.6rem 0 0;padding:0;list-style:none;
+  display:flex;flex-wrap:wrap;gap:.3rem .9rem;
+  font-family:var(--font-ui);font-size:.8rem;letter-spacing:.06em;font-weight:600}
+.vacant{
+  margin:.7rem 0 0;font-family:var(--font-ui);font-size:.72rem;letter-spacing:.06em;
+  opacity:.6;font-style:normal;
+}
+
+/* ============================================================
+   H8 — colophon  (library entry: colophon-contact-sheet)
+   ============================================================ */
+
+.colophon{
+  background:var(--oxblood-deep);color:var(--off-white);
+  font-family:var(--font-ui);font-size:.8rem;line-height:1.6;
+  padding:clamp(2rem,6vw,3.5rem) var(--gutter);
+}
+.colophon__cols{display:flex;flex-wrap:wrap;gap:1.4rem 3.5rem}
+.colophon__label{margin:0 0 .2rem;letter-spacing:.14em;text-transform:uppercase;
+  font-size:.66rem;opacity:.6}
+.colophon__links{display:flex;flex-wrap:wrap;gap:.8rem 1.5rem;margin-top:1.5rem;
+  padding-block:.8rem;border-block:1px solid var(--rule);
+  font-size:.72rem;letter-spacing:.1em;text-transform:uppercase}
+.colophon__credit{display:flex;flex-wrap:wrap;gap:.35rem 1rem;margin:1rem 0 0;
+  font-size:.7rem;opacity:.6;letter-spacing:.04em}
+.colophon a{text-decoration:none}
+.colophon a:hover{text-decoration:underline;text-underline-offset:.3em}
+
+/* ============================================================
+   Article page
+   ============================================================ */
+
+.piece{padding-block:clamp(1.6rem,5vw,3rem)}
+.piece__head{max-width:52rem;margin-inline:auto}
+
+/* library entry: byline-above-title */
+.piece__meta{
+  display:flex;justify-content:space-between;align-items:baseline;
+  gap:.6rem 1rem;flex-wrap:wrap;
+  font-family:var(--font-ui);font-size:.72rem;letter-spacing:.12em;
+  text-transform:uppercase;font-weight:600;
+}
+.piece__label{border-bottom:1px solid currentColor;padding-bottom:.14em;
+  margin-right:.4em;opacity:.6;font-weight:500}
+.piece__meta a{text-decoration:none}
+.piece__meta a:hover{text-decoration:underline;text-underline-offset:.3em}
+.piece__college{opacity:.65}
+.piece__date{opacity:.65}
+
+.piece__title{
+  margin:.55em 0 0;font-family:var(--font-display);font-weight:700;
+  font-size:clamp(2rem,1.25rem + 3.4vw,3.4rem);
+  line-height:1.06;letter-spacing:-.012em;text-wrap:balance;
+}
+.piece__rule{height:1px;background:var(--rule-ink);margin:1.1rem 0 0;border:0}
+.piece__standfirst{
+  margin:1rem 0 0;font-size:clamp(1.15rem,1rem + .9vw,1.55rem);
+  line-height:1.4;font-weight:400;max-width:38ch;opacity:.9;
+}
+
+.piece__body{
+  max-width:52rem;margin:clamp(1.8rem,5vw,3rem) auto 0;
+  display:grid;gap:1.5rem;
+}
+@media (min-width:60rem){
+  .piece__body{grid-template-columns:11rem minmax(0,var(--measure));gap:0 3.5rem}
+  .piece__margin{grid-column:1;text-align:right}
+  .piece__text{grid-column:2}
+}
+.piece__margin{
+  font-family:var(--font-ui);font-size:.68rem;letter-spacing:.1em;
+  text-transform:uppercase;opacity:.6;display:flex;flex-direction:column;gap:.9rem;
+}
+.piece__pull{
+  font-family:var(--font-read);font-size:1rem;letter-spacing:0;text-transform:none;
+  font-style:italic;opacity:1;color:var(--oxblood);border-top:1px solid var(--rule-ink);
+  padding-top:.7rem;
+}
+.piece__text > p{margin:0 0 1.15em;max-width:var(--measure)}
+.piece__text > p:first-of-type::first-letter{
+  float:left;font-family:var(--font-display);font-weight:700;
+  font-size:3.9em;line-height:.78;padding:.06em .1em 0 0;color:var(--oxblood);
+}
+.cite{
+  margin-top:2rem;border:1px solid var(--rule-ink);padding:.9rem 1rem;
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.76rem;line-height:1.55;
+}
+.cite h2{margin:0 0 .5rem;font-family:var(--font-ui);font-size:.66rem;
+  letter-spacing:.14em;text-transform:uppercase;opacity:.6}
+.piece__foot{
+  max-width:52rem;margin:2.5rem auto 0;padding-top:1.2rem;
+  border-top:1px solid var(--rule-ink);
+  display:flex;flex-wrap:wrap;gap:1rem;justify-content:space-between;
+  font-family:var(--font-ui);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
+}
+.piece__foot a{text-decoration:none}
+.piece__foot a:hover{text-decoration:underline;text-underline-offset:.3em}
+
+.specimen{
+  max-width:52rem;margin:1.2rem auto 0;padding:.5rem .75rem;
+  background:color-mix(in srgb,var(--oxblood) 10%,transparent);
+  border-left:2px solid var(--oxblood);
+  font-family:var(--font-ui);font-size:.68rem;letter-spacing:.06em;
+}
+
+/* ---------- author page ------------------------------------- */
+
+.author__head{max-width:66rem;margin-inline:auto}
+.author__sub{margin:.6rem 0 0;font-family:var(--font-ui);font-size:.72rem;
+  letter-spacing:.12em;text-transform:uppercase;opacity:.7}
+.author__list{list-style:none;margin:2rem 0 0;padding:0;max-width:66rem;
+  margin-inline:auto;border-top:1px solid var(--rule-ink)}
+.author__list li{border-bottom:1px solid var(--rule-ink)}
+.author__list a{display:block;padding:1rem 0;text-decoration:none}
+.author__list .index__title{font-size:1.3rem}
+
+/* ---------- reduced motion ---------------------------------- */
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  .index__by{opacity:.8;transform:none}
+}
+
+/* ---------- focus ------------------------------------------- */
+a:focus-visible,button:focus-visible{
+  outline:2px solid var(--gold);outline-offset:3px;
+}
+.cover a:focus-visible{outline-color:var(--gold)}
+
+/* the index's two states: transcribed and readable here, versus published but still
+   only inside the edition. The archive says which is which rather than linking every
+   row to the same page. */
+.index__note--soft{
+  color:color-mix(in srgb,var(--ink) 42%,transparent);
+  font-weight:500;
+}
+.index__row > .index__inert{cursor:default}
+.index__row > .index__inert .index__title{opacity:.72;font-weight:500}

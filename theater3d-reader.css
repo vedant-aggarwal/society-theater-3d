@@ -1,0 +1,631 @@
+/* ============================================================
+   theater3d-reader.css — the room's reading table.
+
+   Not a lightbox. The house goes dark, one warm pool of lamplight
+   comes up, and the copy is picked up off the table into it. Every
+   surface here is the same oxblood, gold and paper as the case the
+   copy came out of.
+
+   THE BOOK. The copy opens as a real magazine does: a left page and
+   a right page bound at a centred spine, page 1 alone on the right
+   until the cover is turned. A turn is a leaf: one sheet, two faces,
+   rotating about the spine on the Y axis through vertical, front face
+   (the page being left behind) giving way to back face (the new left
+   page). Nothing fades, nothing dissolves. Geometry only.
+
+   State, all driven from theater3d-reader.js:
+     .t3reader[hidden]        not present
+     .t3reader.is-lit         the lamp is up, the reader is on screen
+     .t3reader.is-raised      the copy has been picked up off the table
+     .t3reader.is-absent      this edition is not in the archive
+     .t3reader.is-flying      the copy is travelling to/from a shelf rect
+     .t3reader.is-dragging    a leaf is being held under the pointer
+     .t3r-half.is-void        no page in this slot: no board either
+     .t3r-half.is-blank       board present, page not yet arrived
+     .t3r-flip.is-live        a leaf is in the air
+     .t3r-page.is-in          this image has decoded
+
+   Geometry vars, written by fit() and the turn driver:
+     --pw / --ph    one page, in px
+     --shiftk       book offset in page-widths: -.5 cover, 0 spread, +.5 last
+     --edl / --edr  fore-edge thickness, px
+     --t3f-d        leaf shading, 0 flat to 1 edge on
+     --t3f-lit      the light the leaf catches as it lands
+   ============================================================ */
+
+.t3reader {
+  --r-paper: #F8F0D8;
+  --r-ink: #2A0A06;
+  --r-ox: #400000;
+  --r-ox-deep: #2A0000;
+  --r-gold: #E8C77A;
+  --r-gold-dim: #B9975B;
+  --r-ui: 'Montserrat', system-ui, sans-serif;
+  --r-display: 'Noto Serif Display', Georgia, serif;
+  --r-read: 'Crimson Pro', Georgia, serif;
+  --r-ease: cubic-bezier(.2, .85, .3, 1);
+
+  /* the open hand over a lane you can take hold of, and the closed
+     hand while you are holding it. Drawn here, not borrowed from the
+     platform: `grab` is a different picture on every OS, and an emoji
+     is not a cursor. White with a dark outline so both read on a dark
+     stage; hotspot at the middle of the palm. */
+  --r-cur-open: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='34' height='34' viewBox='0 0 34 34'%3E%3Cpath d='M11.2 20.4V8.6a1.9 1.9 0 0 1 3.8 0v6.1V6.4a1.9 1.9 0 0 1 3.8 0v8.3V7.6a1.9 1.9 0 0 1 3.8 0v9.1v-4.6a1.9 1.9 0 0 1 3.7 0v10.3c0 5-3.4 8.6-8.4 8.6-3 0-5-1.1-6.7-3.2l-4.6-6a1.9 1.9 0 0 1 2.8-2.5z' fill='%23fff' stroke='%23210704' stroke-width='1.5' stroke-linejoin='round'/%3E%3C/svg%3E") 17 17;
+  --r-cur-grab: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='34' height='34' viewBox='0 0 34 34'%3E%3Cpath d='M8.6 17.9c0-1 .8-1.8 1.8-1.8h2.1l-1.8-2.6a1.8 1.8 0 0 1 3-2l2.6 3.4a1.8 1.8 0 0 1 1.5-.8h1.9a1.8 1.8 0 0 1 0 3.6h.6a1.8 1.8 0 0 1 0 3.6h-.6a1.8 1.8 0 0 1 0 3.6h-4.3c-3.4 0-6.8-2.4-6.8-6.2z' fill='%23fff' stroke='%23210704' stroke-width='1.5' stroke-linejoin='round'/%3E%3C/svg%3E") 17 17;
+
+  --pw: 300px;
+  --ph: 424px;
+
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  grid-template-rows: auto 1fr auto auto;
+  justify-items: center;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 420ms var(--r-ease), visibility 0s linear 420ms;
+}
+.t3reader[hidden] { display: none; }
+.t3reader.is-lit {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition: opacity 380ms var(--r-ease), visibility 0s;
+}
+.t3reader *, .t3reader *::before, .t3reader *::after { box-sizing: border-box; }
+.t3reader .sr-only {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap;
+}
+
+/* ---------- the house, going dark ---------- */
+
+.t3r-house {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 70% 55% at 50% 46%, rgba(20, 4, 3, .82) 0%, rgba(11, 2, 2, .95) 62%, rgba(6, 1, 1, .985) 100%);
+  backdrop-filter: saturate(.72) brightness(.5);
+  -webkit-backdrop-filter: saturate(.72) brightness(.5);
+}
+
+/* the lamp. Blooms first, before the copy comes up. */
+.t3r-pool {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 46% 50% at 50% 52%, rgba(255, 206, 140, .26) 0%, rgba(255, 176, 104, .12) 38%, rgba(255, 150, 80, 0) 72%);
+  opacity: 0;
+  transform: scale(.86);
+  transition: opacity 520ms var(--r-ease), transform 700ms var(--r-ease);
+}
+.t3reader.is-lit .t3r-pool { opacity: 1; transform: scale(1); }
+
+/* ---------- the plate above ---------- */
+
+.t3r-plate {
+  position: relative;
+  z-index: 3;
+  width: min(100%, 70rem);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: clamp(.8rem, 2.2vw, 1.6rem) clamp(1rem, 3vw, 2.2rem) .6rem;
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity 420ms var(--r-ease) 160ms, transform 420ms var(--r-ease) 160ms;
+}
+.t3reader.is-lit .t3r-plate { opacity: 1; transform: none; }
+
+.t3r-title { display: flex; flex-direction: column; gap: .18rem; min-width: 0; }
+.t3r-title-main {
+  font-family: var(--r-display);
+  font-weight: 700;
+  font-size: clamp(1.05rem, .8rem + .9vw, 1.6rem);
+  line-height: 1.12;
+  letter-spacing: .015em;
+  color: var(--r-gold);
+}
+.t3r-title-sub {
+  font-family: var(--r-ui);
+  font-size: .625rem;
+  font-weight: 600;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: rgba(232, 199, 122, .58);
+}
+
+.t3r-close {
+  flex: 0 0 auto;
+  font-family: var(--r-ui);
+  font-size: .625rem;
+  font-weight: 700;
+  letter-spacing: .22em;
+  padding: .55rem .95rem;
+  color: var(--r-gold);
+  background: transparent;
+  border: 1px solid rgba(232, 199, 122, .34);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background 260ms var(--r-ease), border-color 260ms var(--r-ease), color 260ms var(--r-ease);
+}
+.t3r-close:hover,
+.t3r-close:focus-visible {
+  background: rgba(232, 199, 122, .12);
+  border-color: rgba(232, 199, 122, .7);
+  color: #FFF0C4;
+  outline: none;
+}
+
+/* ---------- the copy on the table ---------- */
+
+.t3r-copywrap {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-height: 0;
+  padding-inline: clamp(.4rem, 2vw, 1.4rem);
+}
+
+/* cast shadow under the whole copy. Wide and soft while it lies flat,
+   tight once it is picked up. */
+.t3r-shadow {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(4px, 1.6vh, 18px);
+  width: min(72%, 46rem);
+  height: clamp(24px, 5vh, 56px);
+  transform: translateX(-50%) scale(1.12, 1);
+  background: radial-gradient(ellipse 50% 50% at 50% 50%, rgba(0, 0, 0, .62) 0%, rgba(0, 0, 0, .28) 46%, rgba(0, 0, 0, 0) 78%);
+  filter: blur(7px);
+  opacity: 0;
+  transition: opacity 460ms var(--r-ease), transform 620ms var(--r-ease), filter 620ms var(--r-ease);
+  pointer-events: none;
+}
+.t3reader.is-lit .t3r-shadow { opacity: .8; }
+.t3reader.is-raised .t3r-shadow {
+  transform: translateX(-50%) scale(.8, .78);
+  filter: blur(4px);
+  opacity: .95;
+}
+.t3reader.is-flying .t3r-shadow { opacity: 0; transition: opacity 200ms ease; }
+
+/* the copy. Carries the travel from the shelf (translate + scale) and
+   lends the stage below it its perspective. */
+.t3r-copy {
+  position: relative;
+  margin: 0;
+  perspective: 2000px;
+  opacity: 0;
+  transition: opacity 320ms ease;
+  will-change: transform;
+}
+.t3reader.is-lit .t3r-copy { opacity: 1; }
+.t3reader.is-absent .t3r-copy { display: none; }
+
+/* the reading plane: two page slots wide. The pick-up tilts this,
+   and it hands its own perspective down to the leaf that turns. */
+.t3r-stage {
+  position: relative;
+  width: calc(var(--pw) * 2);
+  height: var(--ph);
+  perspective: 2600px;
+  perspective-origin: 50% 44%;
+  transform-origin: 50% 88%;
+  /* lying flat on the table, seen almost edge on */
+  transform: rotateX(46deg) translateY(6%) scale(.9);
+  transition: transform 460ms var(--r-ease);
+  will-change: transform;
+}
+/* the pick-up: it tilts up off the table toward the reader */
+.t3reader.is-raised .t3r-stage { transform: none; }
+
+/* refusing a page past either cover */
+.t3r-stage.is-nudge-l { animation: t3r-nudge-l 300ms var(--r-ease); }
+.t3r-stage.is-nudge-r { animation: t3r-nudge-r 300ms var(--r-ease); }
+@keyframes t3r-nudge-l {
+  40% { transform: translateX(-1.4%) rotateY(2deg); }
+  100% { transform: translateX(0) rotateY(0); }
+}
+@keyframes t3r-nudge-r {
+  40% { transform: translateX(1.4%) rotateY(-2deg); }
+  100% { transform: translateX(0) rotateY(0); }
+}
+
+/* the bound block. Slides sideways so the spine stays centred: half a
+   page to the right while only the cover is showing, back to nothing
+   once the copy is spread. */
+.t3r-book {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transform: translateX(calc(var(--pw) * var(--shiftk, -.5)));
+}
+
+/* ---------- one page slot ---------- */
+
+.t3r-half {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: var(--pw);
+}
+.t3r-half-l { left: 0; }
+.t3r-half-r { left: var(--pw); }
+
+/* bound boards, proud of the block on the three outer sides */
+.t3r-half::before {
+  content: "";
+  position: absolute;
+  top: -9px;
+  bottom: -10px;
+  background: linear-gradient(103deg, #571109 0%, #400000 46%, #310604 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(232, 199, 122, .13),
+    inset 0 1px 0 rgba(255, 214, 150, .16),
+    0 26px 58px rgba(0, 0, 0, .6);
+  opacity: 1;
+  transition: opacity 260ms var(--r-ease);
+}
+.t3r-half-l::before { left: -11px; right: 0; border-radius: 2px 0 0 2px; }
+.t3r-half-r::before { left: 0; right: -11px; border-radius: 0 2px 2px 0; }
+.t3r-half.is-void::before { opacity: 0; }
+
+.t3r-page {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #efe7cf;
+  opacity: 0;
+  transition: opacity 220ms ease;
+}
+.t3r-page.is-in { opacity: 1; }
+.t3r-half.is-void .t3r-page,
+.t3r-half.is-blank .t3r-page { opacity: 0; }
+
+/* the gutter: the fold both pages fall away into. This is what makes a
+   spread read as bound rather than as two pictures side by side. */
+.t3r-gutter {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  bottom: 0;
+  width: 11%;
+  max-width: 54px;
+  pointer-events: none;
+  transition: opacity 220ms ease;
+}
+.t3r-half-l .t3r-gutter {
+  right: 0;
+  background: linear-gradient(to right,
+    rgba(30, 12, 6, 0) 0%, rgba(30, 12, 6, .10) 46%, rgba(24, 9, 4, .30) 82%, rgba(20, 7, 3, .46) 100%);
+}
+.t3r-half-r .t3r-gutter {
+  left: 0;
+  background: linear-gradient(to left,
+    rgba(30, 12, 6, 0) 0%, rgba(30, 12, 6, .10) 46%, rgba(24, 9, 4, .30) 82%, rgba(20, 7, 3, .46) 100%);
+}
+.t3r-half.is-void .t3r-gutter,
+.t3r-half.is-blank .t3r-gutter { opacity: 0; }
+
+/* ---------- the fore-edges of the leaves not being read ---------- */
+/* thick on the side that still has pages to go, thin on the side
+   already turned, and they trade thickness as the leaf goes over. */
+
+.t3r-edge {
+  position: absolute;
+  top: 2%;
+  bottom: 3%;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(90deg,
+      #e7ddc1 0 1px, #c9bd9c 1px 2px, #f2ead2 2px 3px);
+  box-shadow: inset 0 0 6px rgba(90, 66, 30, .4);
+  opacity: .92;
+}
+.t3r-edge-l { right: 100%; width: var(--edl, 0px); border-radius: 1px 0 0 1px; }
+.t3r-edge-r { left: 100%; width: var(--edr, 0px); border-radius: 0 1px 1px 0; }
+
+/* ---------- the leaf in the air ---------- */
+
+/* the shadow the turning leaf throws on whatever is under it. Anchored
+   at the spine, stretched by the cosine of the leaf's angle, so it
+   shortens to nothing as the leaf stands up and lays out again on the
+   far side. Transform and opacity only. */
+.t3r-cast {
+  position: absolute;
+  top: 1.5%;
+  bottom: 1.5%;
+  left: var(--pw);
+  width: var(--pw);
+  z-index: 3;
+  pointer-events: none;
+  transform-origin: 0% 50%;
+  transform: translateZ(1px) scaleX(1);
+  opacity: 0;
+  background: linear-gradient(to right,
+    rgba(0, 0, 0, .5) 0%, rgba(0, 0, 0, .3) 24%, rgba(0, 0, 0, .12) 54%, rgba(0, 0, 0, 0) 88%);
+  will-change: transform, opacity;
+}
+
+.t3r-flip {
+  position: absolute;
+  top: 0;
+  left: var(--pw);
+  width: var(--pw);
+  height: 100%;
+  z-index: 5;
+  visibility: hidden;
+  pointer-events: none;
+  transform-origin: 0% 50%;
+  transform-style: preserve-3d;
+  transform: translateZ(2px) rotateY(0deg);
+  will-change: transform;
+}
+.t3r-flip.is-live { visibility: visible; }
+
+.t3r-face {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 1px;
+  background: #efe7cf;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+/* the far face of the sheet, mirrored so it reads the right way round
+   once the leaf has gone over */
+.t3r-face-b { transform: rotateY(180deg); }
+
+/* the shading across the leaf: darkest at the spine, and deepening as
+   the sheet turns edge on to the lamp. One variable, two faces. */
+.t3r-shade {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  opacity: var(--t3f-d, 0);
+  background: linear-gradient(90deg,
+    rgba(14, 5, 2, .92) 0%, rgba(14, 5, 2, .46) 26%, rgba(14, 5, 2, .18) 62%, rgba(14, 5, 2, .04) 100%);
+}
+.t3r-face-b .t3r-shade { transform: scaleX(-1); }
+
+/* the light it catches on the way down */
+.t3r-lit {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  opacity: var(--t3f-lit, 0);
+  background: linear-gradient(100deg,
+    rgba(255, 240, 200, 0) 18%, rgba(255, 240, 200, .26) 52%, rgba(255, 240, 200, 0) 84%);
+}
+
+/* the copy is dark until the lamp reaches it */
+.t3r-copyveil {
+  position: absolute;
+  inset: -12px;
+  z-index: 6;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 88% 82% at 50% 34%, rgba(0, 0, 0, 0) 0%, rgba(12, 4, 2, .30) 78%, rgba(10, 3, 2, .52) 100%);
+  opacity: 1;
+  transition: opacity 560ms var(--r-ease) 120ms;
+}
+.t3reader.is-raised .t3r-copyveil { opacity: .3; }
+
+/* ---------- the lanes you take hold of ---------- */
+
+.t3r-zone {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: var(--pw);
+  z-index: 7;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+  cursor: var(--r-cur-open), grab;
+}
+.t3r-zone-prev { left: 0; }
+.t3r-zone-next { left: var(--pw); }
+.t3r-zone:focus-visible {
+  outline: 2px solid rgba(232, 199, 122, .8);
+  outline-offset: -4px;
+}
+.t3reader.is-dragging .t3r-zone,
+.t3r-zone:active { cursor: var(--r-cur-grab), grabbing; }
+.t3reader.is-dragging { cursor: var(--r-cur-grab), grabbing; }
+
+/* ---------- an edition that is not in the archive ---------- */
+
+.t3r-absent {
+  position: relative;
+  display: none;
+  width: min(88vw, 30rem);
+  padding: clamp(1.6rem, 4vw, 2.6rem);
+  text-align: center;
+  border-radius: 2px;
+  background: linear-gradient(103deg, #571109 0%, #400000 48%, #310604 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 214, 150, .14), 0 26px 60px rgba(0, 0, 0, .6);
+}
+.t3reader.is-absent .t3r-absent { display: block; }
+.t3r-absent::after {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  border: 1px solid rgba(232, 199, 122, .24);
+  pointer-events: none;
+}
+.t3r-absent-kick {
+  margin: 0 0 1.1rem;
+  font-family: var(--r-ui);
+  font-size: .5625rem;
+  font-weight: 700;
+  letter-spacing: .26em;
+  color: rgba(232, 199, 122, .56);
+}
+.t3r-absent-title {
+  margin: 0;
+  font-family: var(--r-display);
+  font-weight: 700;
+  font-size: clamp(1.4rem, 1rem + 1.6vw, 2rem);
+  line-height: 1.08;
+  color: var(--r-gold);
+}
+.t3r-absent-sub {
+  margin: .45rem 0 0;
+  font-family: var(--r-ui);
+  font-size: .625rem;
+  font-weight: 600;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: rgba(240, 240, 240, .5);
+}
+.t3r-absent-rule {
+  width: 2.6rem;
+  height: 1px;
+  margin: 1.3rem auto;
+  background: rgba(232, 199, 122, .45);
+}
+.t3r-absent-why {
+  margin: 0 auto;
+  max-width: 32ch;
+  font-family: var(--r-read);
+  font-style: italic;
+  font-size: 1rem;
+  line-height: 1.55;
+  color: rgba(248, 240, 216, .8);
+}
+.t3r-absent-go {
+  display: inline-block;
+  margin-top: 1.6rem;
+  padding: .6rem 1.1rem;
+  font-family: var(--r-ui);
+  font-size: .625rem;
+  font-weight: 700;
+  letter-spacing: .22em;
+  text-decoration: none;
+  color: var(--r-gold);
+  border: 1px solid rgba(232, 199, 122, .38);
+  border-radius: 2px;
+  transition: background 260ms var(--r-ease), color 260ms var(--r-ease);
+}
+.t3r-absent-go:hover,
+.t3r-absent-go:focus-visible { background: rgba(232, 199, 122, .14); color: #FFF0C4; outline: none; }
+
+/* ---------- the foot ---------- */
+
+.t3r-foot {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: clamp(1rem, 3vw, 2rem);
+  padding: clamp(.6rem, 1.8vh, 1.1rem) 0 .2rem;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 420ms var(--r-ease) 220ms, transform 420ms var(--r-ease) 220ms;
+}
+.t3reader.is-lit .t3r-foot { opacity: 1; transform: none; }
+.t3reader.is-absent .t3r-foot { display: none; }
+
+.t3r-btn {
+  width: 2.4rem;
+  height: 2.4rem;
+  font-size: 1rem;
+  line-height: 1;
+  color: var(--r-gold);
+  background: transparent;
+  border: 1px solid rgba(232, 199, 122, .3);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background 240ms var(--r-ease), border-color 240ms var(--r-ease), opacity 240ms ease;
+}
+.t3r-btn:hover:not(:disabled),
+.t3r-btn:focus-visible:not(:disabled) {
+  background: rgba(232, 199, 122, .12);
+  border-color: rgba(232, 199, 122, .66);
+  outline: none;
+}
+.t3r-btn:disabled { opacity: .28; cursor: default; }
+
+.t3r-pos {
+  min-width: 7rem;
+  text-align: center;
+  font-family: var(--r-ui);
+  font-size: .6875rem;
+  font-weight: 600;
+  letter-spacing: .2em;
+  color: rgba(232, 199, 122, .8);
+  font-variant-numeric: tabular-nums;
+}
+
+.t3r-hint {
+  position: relative;
+  z-index: 3;
+  margin: 0;
+  padding: 0 1rem clamp(.7rem, 2vh, 1.3rem);
+  font-family: var(--r-ui);
+  font-size: .5625rem;
+  font-weight: 500;
+  letter-spacing: .26em;
+  text-transform: uppercase;
+  color: rgba(232, 199, 122, .34);
+  opacity: 0;
+  transition: opacity 600ms ease 700ms;
+}
+.t3reader.is-lit .t3r-hint { opacity: 1; }
+
+/* ---------- narrow screens ---------- */
+
+@media (max-width: 40rem) {
+  .t3r-plate { padding-inline: 1rem; }
+  .t3r-title-main { font-size: 1.05rem; }
+  .t3r-close { padding: .45rem .7rem; letter-spacing: .16em; }
+  .t3r-foot { gap: 1rem; }
+  .t3r-hint { letter-spacing: .18em; }
+  .t3r-half::before { top: -6px; bottom: -7px; }
+  .t3r-half-l::before { left: -7px; }
+  .t3r-half-r::before { right: -7px; }
+}
+
+/* ---------- reduced motion: the deliberate static version ---------- */
+/* no leaf in the air at all, no drag: the spread simply changes. */
+
+@media (prefers-reduced-motion: reduce) {
+  .t3reader,
+  .t3r-pool,
+  .t3r-plate,
+  .t3r-foot,
+  .t3r-hint,
+  .t3r-shadow,
+  .t3r-copyveil,
+  .t3r-copy,
+  .t3r-half::before,
+  .t3r-gutter { transition: none; }
+  .t3r-stage {
+    transition: none;
+    /* no pick-up: the copy is simply already up, facing the reader */
+    transform: none;
+  }
+  .t3reader.is-raised .t3r-stage { transform: none; }
+  .t3r-stage.is-nudge-l, .t3r-stage.is-nudge-r { animation: none; }
+  .t3r-flip { display: none; }
+  .t3r-cast { display: none; }
+  .t3r-page { transition: none; }
+  .t3r-zone { cursor: pointer; }
+}

@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="A sample article. Placeholder content.">
+<meta name="robots" content="noindex,nofollow">
+<title>Sample article one · The Bulletin · The Society</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:ital,wdth,wght@0,62.5..100,400..800;1,62.5..100,400..700&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="site.css">
+<style>
+  /* the transcription note: quiet, but it does not hide */
+  /* site.css sets the drop cap on .piece__text > p:first-of-type. The transcription note
+     is now that paragraph, so the rule has to be moved rather than added to, or the page
+     gets two drop caps. */
+  .piece__text > p:first-of-type::first-letter{
+    float:none;font-size:inherit;line-height:inherit;font-family:inherit;
+    font-weight:inherit;padding:0;color:inherit;
+  }
+  .provenance{
+    /* a note about the text belongs in the text column, not out in the gutter */
+    margin:0 0 1.9rem;
+    padding:.85rem 1rem;
+    border-left:2px solid var(--rule-ink);
+    background:color-mix(in srgb,var(--ink) 4%,transparent);
+    font-family:var(--font-ui);
+    font-size:.75rem;line-height:1.6;letter-spacing:.01em;
+    color:color-mix(in srgb,var(--ink) 78%,transparent);
+    max-width:62ch;
+  }
+  .provenance a{color:inherit}
+  .piece__text h2{
+    font-family:var(--font-display);
+    font-size:1.25rem;font-weight:700;line-height:1.2;
+    margin:2.1rem 0 .6rem;
+  }
+  .piece__text h2::after{
+    content:"";display:block;width:2.6rem;height:1px;margin-top:.4rem;
+    background:currentColor;opacity:.42;
+  }
+  /* explicit, not :first-of-type: the transcription note is also a paragraph, and it
+     was wearing the drop cap */
+  .piece__text p.lede::first-letter{
+    float:left;
+    font-family:var(--font-display);font-weight:700;
+    font-size:3.35em;line-height:.82;
+    padding:.06em .14em 0 0;
+    color:var(--oxblood);
+  }
+  .attrib{
+    margin:.4rem 0 0;text-align:right;
+    font-family:var(--font-ui);font-size:.6875rem;font-weight:600;
+    letter-spacing:.16em;text-transform:uppercase;
+    color:color-mix(in srgb,var(--ink) 58%,transparent);
+  }
+  .piece__foot .cite{display:block;margin-top:.5rem}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="topbar__mark" href="theater3d.html">THE SOCIETY<small>A SAMPLE STUDENT SOCIETY</small></a>
+  <nav class="topbar__nav" aria-label="Primary">
+    <a href="work.html">Campaigns</a>
+    <a href="summit.html">Summit</a>
+    <a href="learn.html">Case Method</a>
+    <a href="society.html">Society</a>
+    <a href="archive.html">Index</a>
+  </nav>
+</header>
+
+<div class="subbar">
+  <a href="archive.html">The Bulletin, sample edition 4 &middot; page 3</a>
+  <a href="archive.html">The Index &rarr;</a>
+</div>
+
+<article class="piece wrap">
+
+  <header class="piece__head">
+    <div class="piece__meta">
+      <p style="margin:0">
+        <span class="piece__label">Words by</span>
+        <a href="author.html">Author One</a>,
+        <span class="piece__college">Sample course &middot; Sample College</span>
+      </p>
+      <time class="piece__date" datetime="2026-07">Sample date</time>
+    </div>
+
+    <h1 class="piece__title">Sample article one: a placeholder headline</h1>
+    <hr class="piece__rule">
+    <p class="piece__standfirst">A placeholder standfirst. This sentence stands in for the
+    one-line summary that sits under the headline.</p>
+  </header>
+
+  <div class="piece__body">
+    <aside class="piece__margin">
+      <p style="margin:0">2 min read</p>
+      <p style="margin:0">The Bulletin, sample edition 4<br>page 3</p>
+      <p class="piece__pull">A placeholder pull quote for the margin.</p>
+    </aside>
+
+    <div class="piece__text">
+      <p class="provenance">
+        Placeholder provenance note. On the original site this box explained where the
+        article text came from; here it holds sample text only.
+      </p>
+      <p class="lede">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+
+      <h2>A sample subhead</h2>
+      <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+
+      <h2>A second sample subhead</h2>
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+
+      <h2>Key takeaway</h2>
+      <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+
+      <blockquote class="piece__pull" style="margin:2rem 0 0">&ldquo;A placeholder closing quotation for the article.&rdquo;</blockquote>
+      <p class="attrib">Author One, Sample College</p>
+    </div>
+  </div>
+
+  <footer class="piece__foot">
+    <p>
+      <span class="piece__label">Also in this edition</span>
+      <a href="article-2.html">Sample article two</a> &nbsp;&middot;&nbsp; <a href="article-3.html">Sample article three</a> &nbsp;&middot;&nbsp; <a href="article-4.html">Sample article four</a>
+    </p>
+    <p class="cite">
+      Source: The Bulletin, sample edition 4, page 3.
+      <a href="#" rel="noopener">Sample announcement</a>.
+    </p>
+    <p class="cite">
+      <a href="archive.html">&larr; Everything the society has published</a> &nbsp;&middot;&nbsp;
+      <a href="theater3d.html">The theater</a>
+    </p>
+  </footer>
+
+</article>
+
+</body>
+</html>

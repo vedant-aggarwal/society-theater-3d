@@ -1,0 +1,119 @@
+[
+ {
+  "id": "project-one",
+  "short": "a sample on-ground campaign",
+  "ran": "Oct 2025",
+  "head": 0,
+  "brand": "Brand One",
+  "what": "a sample consumer brand",
+  "line": "Placeholder description of the work done for Brand One. This sentence stands in for a short account of the campaign.",
+  "when": "Sample dates, Oct 2025",
+  "post": "#",
+  "deckLabel": "The five page project deck",
+  "receipts": [
+   {
+    "n": "1,000+",
+    "of": "sample metric one",
+    "src": "1,000+ placeholder quote describing sample metric one",
+    "from": "Brand One sample deck",
+    "url": "#"
+   },
+   {
+    "n": "100+",
+    "of": "sample metric two",
+    "src": "100+ placeholder quote describing sample metric two",
+    "from": "Brand One sample deck",
+    "url": "#"
+   }
+  ],
+  "coda": {
+   "text": "Placeholder follow-up note about Brand One.",
+   "from": "Sample post",
+   "url": "#"
+  },
+  "deck": {
+   "src": "assets/acts/project-one.jpg",
+   "w": 560,
+   "h": 700
+  }
+ },
+ {
+  "id": "project-two",
+  "short": "sample campus activations",
+  "ran": "Aug to Dec 2025",
+  "head": 0,
+  "brand": "Brand Two",
+  "what": "a sample electronics brand",
+  "line": "Placeholder description of the work done for Brand Two. This sentence stands in for a short account of the campaign.",
+  "when": "Sample dates, Aug to Dec 2025",
+  "post": "#",
+  "deckLabel": "The five page project deck",
+  "receipts": [
+   {
+    "n": "2,000+",
+    "of": "sample metric one",
+    "src": "2,000+ placeholder quote describing sample metric one",
+    "from": "Brand Two sample deck",
+    "url": "#"
+   },
+   {
+    "n": "200+",
+    "of": "sample metric two",
+    "src": "200+ placeholder quote describing sample metric two",
+    "from": "Brand Two sample deck",
+    "url": "#"
+   }
+  ],
+  "coda": null,
+  "deck": {
+   "src": "assets/acts/project-two.jpg",
+   "w": 560,
+   "h": 700
+  }
+ },
+ {
+  "id": "project-three",
+  "short": "a sample product launch",
+  "ran": "Mar 2026",
+  "head": 2,
+  "brand": "Brand Three",
+  "what": "a sample snacking brand",
+  "line": "Placeholder description of the work done for Brand Three. This sentence stands in for a short account of the campaign.",
+  "when": "Sample dates, Mar 2026",
+  "post": "#",
+  "deckLabel": "The five page project deck",
+  "receipts": [
+   {
+    "n": "300+",
+    "of": "sample metric one",
+    "src": "300+ placeholder quote describing sample metric one",
+    "from": "Brand Three sample deck",
+    "url": "#"
+   },
+   {
+    "n": "30+",
+    "of": "sample metric two",
+    "src": "30+ placeholder quote describing sample metric two",
+    "from": "Brand Three sample deck",
+    "url": "#"
+   },
+   {
+    "n": "3,000+",
+    "of": "sample metric three",
+    "src": "3,000+ placeholder quote describing sample metric three",
+    "from": "Brand Three sample deck",
+    "url": "#"
+   }
+  ],
+  "coda": {
+   "text": "Placeholder follow-up note about Brand Three.",
+   "from": "Sample post",
+   "url": "#"
+  },
+  "deck": {
+   "src": "assets/acts/project-three.jpg",
+   "w": 560,
+   "h": 700
+  }
+ }
+]

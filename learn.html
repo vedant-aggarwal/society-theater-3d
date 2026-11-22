@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>The Case Method · how the society teaches</title>
+<meta name="description" content="How the sample society teaches: a concept series, a casebook and speaker sessions. Placeholder content.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:ital,wdth,wght@0,62.5..100,400..800;1,62.5..100,400..700&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="site.css">
+<style>
+  /* ---- lesson head --------------------------------------------- */
+  .lesson{padding-block:clamp(1.8rem,5vw,3rem) 0}
+  .lesson__title{
+    margin:.4rem 0 0;font-family:var(--font-display);font-stretch:62.5%;font-weight:800;
+    font-size:clamp(2.8rem,1.5rem + 7vw,6.5rem);line-height:.92;letter-spacing:-.01em;
+  }
+  .lesson__stand{
+    margin:1rem 0 0;max-width:40em;
+    font-size:clamp(1.05rem,.95rem + .8vw,1.4rem);line-height:1.45;opacity:.92;
+  }
+
+  /* ---- the anatomy of a crack ----------------------------------- */
+  .anatomy{background:var(--oxblood-deep);color:var(--off-white);
+    padding-block:clamp(2.2rem,6vw,4rem);margin-top:clamp(1.8rem,5vw,3rem)}
+  .anatomy__grid{display:grid;gap:2rem;align-items:start}
+  @media (min-width:56rem){ .anatomy__grid{grid-template-columns:minmax(0,26rem) minmax(0,1fr);gap:3.5rem} }
+  .anatomy figure{margin:0}
+  .anatomy img{width:100%;display:block;outline:1px solid var(--rule);outline-offset:-1px}
+  .anatomy figcaption{margin-top:.55rem;font-family:var(--font-ui);font-size:.64rem;
+    letter-spacing:.12em;text-transform:uppercase;color:var(--gold);opacity:.85}
+  .moves{margin:1.2rem 0 0;padding:0;list-style:none;counter-reset:move}
+  .moves li{
+    counter-increment:move;position:relative;
+    padding:.85rem 0 .85rem 3.4rem;
+    border-top:1px solid color-mix(in srgb,var(--gold) 22%,transparent);
+  }
+  .moves li::before{
+    content:"0" counter(move);position:absolute;left:0;top:.95rem;
+    font-family:var(--font-display);font-stretch:75%;font-weight:700;
+    font-size:1.5rem;line-height:1;color:var(--gold);
+  }
+  .moves h3{margin:0;font-family:var(--font-ui);font-size:.66rem;
+    letter-spacing:.18em;text-transform:uppercase;font-weight:700;color:var(--gold)}
+  .moves p{margin:.3rem 0 0;font-size:1rem;max-width:46ch}
+  .anatomy__closer{margin:1.4rem 0 0;font-style:italic;opacity:.92;max-width:52ch}
+
+  /* ---- the casebook --------------------------------------------- */
+  .casebook{display:grid;gap:2rem;align-items:start}
+  @media (min-width:60rem){ .casebook{grid-template-columns:minmax(0,1fr) minmax(0,22rem);gap:3.5rem} }
+  .casebook__text p{margin:0 0 1.1em;max-width:var(--measure)}
+  .frameworks{
+    display:flex;flex-wrap:wrap;gap:.4rem .5rem;margin:1rem 0 0;padding:0;list-style:none;
+  }
+  .frameworks li{
+    font-family:var(--font-ui);font-size:.7rem;letter-spacing:.13em;
+    text-transform:uppercase;font-weight:600;
+    padding:.38rem .65rem;border:1px solid var(--rule-ink);
+  }
+  .qa{margin:1.8rem 0 0;border-top:3px solid var(--oxblood);padding-top:1.1rem;max-width:var(--measure)}
+  .qa__q{margin:0;font-family:var(--font-display);font-weight:600;
+    font-size:clamp(1.15rem,1rem + 1vw,1.5rem);line-height:1.3;color:var(--oxblood)}
+  .qa__a{margin:.7rem 0 0}
+  .qa__cite{margin:.8rem 0 0;font-family:var(--font-ui);font-size:.64rem;
+    letter-spacing:.13em;text-transform:uppercase;opacity:.62}
+  .casebook aside figure{margin:0}
+  .casebook aside img{width:100%;display:block;outline:1px solid var(--rule-ink);outline-offset:-1px}
+  .casebook aside figcaption{margin-top:.5rem;font-family:var(--font-ui);font-size:.64rem;
+    letter-spacing:.1em;text-transform:uppercase;opacity:.62;line-height:1.6}
+  .convenor-pull{
+    margin:1.8rem 0 0;padding:1rem 0;border-block:1px solid var(--rule-ink);
+    font-family:var(--font-display);font-weight:600;
+    font-size:clamp(1.2rem,1rem + 1.2vw,1.65rem);line-height:1.28;color:var(--oxblood);
+    text-wrap:balance;max-width:30em;
+  }
+  .convenor-pull cite{display:block;margin-top:.55rem;font-style:normal;
+    font-family:var(--font-ui);font-size:.64rem;letter-spacing:.14em;
+    text-transform:uppercase;opacity:.65}
+
+  /* ---- sessions and episodes ------------------------------------ */
+  .rooms{display:grid;gap:2rem;align-items:start}
+  @media (min-width:60rem){ .rooms{grid-template-columns:minmax(0,22rem) minmax(0,1fr);gap:3.5rem} }
+  .rooms figure{margin:0}
+  .rooms img{width:100%;display:block;outline:1px solid var(--rule-ink);outline-offset:-1px}
+  .rooms figcaption{margin-top:.5rem;font-family:var(--font-ui);font-size:.64rem;
+    letter-spacing:.1em;text-transform:uppercase;opacity:.62;line-height:1.6}
+  .session{border-top:1px solid var(--rule-ink);padding:1rem 0}
+  .session:first-of-type{border-top:0;padding-top:0}
+  .session h3{margin:0;font-family:var(--font-display);font-weight:600;
+    font-size:clamp(1.15rem,1rem + .9vw,1.45rem);line-height:1.3}
+  .session .who{margin:.3rem 0 0;font-family:var(--font-ui);font-size:.68rem;
+    letter-spacing:.12em;text-transform:uppercase;opacity:.65}
+  .session ul{margin:.6rem 0 0;padding-left:1.1rem;font-size:.98rem}
+  .session ul li{margin:.2rem 0}
+
+  .episodes{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(11rem,17rem));margin-top:1.2rem}
+  .episodes figure{margin:0}
+  .episodes img{width:100%;display:block;outline:1px solid var(--rule-ink);outline-offset:-1px}
+  .episodes figcaption{margin-top:.45rem;font-family:var(--font-ui);font-size:.62rem;
+    letter-spacing:.12em;text-transform:uppercase;opacity:.65;line-height:1.5}
+
+  .leadout{background:var(--oxblood);color:var(--off-white);
+    padding:clamp(1.6rem,4vw,2.4rem) var(--gutter);
+    font-family:var(--font-ui);font-size:.78rem;letter-spacing:.1em;
+    text-transform:uppercase;font-weight:600}
+  .leadout a{color:var(--gold);text-decoration:none;border-bottom:1px solid color-mix(in srgb,var(--gold) 55%,transparent);padding-bottom:.12em}
+  .leadout a:hover{border-color:var(--gold)}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="topbar__mark" href="theater3d.html">THE SOCIETY<small>A SAMPLE STUDENT SOCIETY</small></a>
+  <nav class="topbar__nav" aria-label="Primary">
+    <a href="work.html">Campaigns</a>
+    <a href="summit.html">Summit</a>
+    <a href="learn.html" aria-current="page" style="text-decoration:underline;text-underline-offset:.3em">Case Method</a>
+    <a href="society.html">Society</a>
+    <a href="archive.html">Index</a>
+  </nav>
+</header>
+
+<div class="subbar">
+  <a href="theater3d.html">&larr; The theater</a>
+  <span>How the society teaches &middot; The Series &middot; The Casebook &middot; sessions</span>
+</div>
+
+<main>
+
+  <header class="lesson wrap">
+    <div class="limit">
+      <p class="eyebrow" style="color:var(--oxblood);opacity:.85">The Society &middot; The teaching practice</p>
+      <h1 class="lesson__title">The Case Method</h1>
+      <p class="lesson__stand">
+        Placeholder introduction to how the society teaches: a sample brand, a sample
+        decision, and the concept that explains it, in five moves.
+      </p>
+    </div>
+  </header>
+
+  <section class="anatomy wrap" aria-labelledby="anatomy-title">
+    <div class="limit">
+      <h2 class="rule-head" id="anatomy-title" style="color:var(--gold)">Anatomy of a crack</h2>
+      <div class="anatomy__grid" style="margin-top:1.4rem">
+        <figure>
+          <img src="assets/placeholders/portrait-1.jpg" alt="Placeholder slide">
+          <figcaption>The Series, sample episode &middot; placeholder</figcaption>
+        </figure>
+        <div>
+          <ol class="moves" aria-label="The five moves of a concept crack">
+            <li>
+              <h3>Name the term</h3>
+              <p>"Sample term." One concept per episode.</p>
+            </li>
+            <li>
+              <h3>Define it in one breath</h3>
+              <p>A one-line placeholder definition.</p>
+            </li>
+            <li>
+              <h3>Say why it matters</h3>
+              <p>A placeholder line on why the concept matters.</p>
+            </li>
+            <li>
+              <h3>Pin it to an example</h3>
+              <p>A placeholder example from a sample brand.</p>
+            </li>
+            <li>
+              <h3>Close the equation</h3>
+              <p>A placeholder one-line conclusion.</p>
+            </li>
+          </ol>
+          <p class="anatomy__closer">
+            "A placeholder line explaining the format."
+            Placeholder note on how each episode follows it.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--paper wrap" aria-labelledby="casebook-title">
+    <div class="limit casebook">
+      <div class="casebook__text">
+        <h2 class="rule-head" id="casebook-title">The casebook behind it</h2>
+        <p style="margin-top:1rem">
+          Placeholder description of <strong>The Casebook</strong>, a sample marketing
+          casebook, and the frameworks it uses:
+        </p>
+        <ul class="frameworks" aria-label="Frameworks covered in the sample casebook">
+          <li>Framework one</li><li>Framework two</li><li>Framework three</li><li>Framework four</li>
+          <li>Framework five</li><li>Framework six</li>
+        </ul>
+        <p style="margin-top:1.4rem">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+        </p>
+        <div class="qa">
+          <p class="qa__q">A placeholder interview question, set as a heading?</p>
+          <p class="qa__a">"A placeholder answer from a sample industry guest. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."</p>
+          <p class="qa__cite">Guest Speaker Two &middot; The Casebook, sample edition</p>
+        </div>
+        <blockquote class="convenor-pull">
+          "A placeholder pull quote from the faculty convenor."
+          <cite>Staff Member One, Convenor, sample source</cite>
+        </blockquote>
+      </div>
+      <aside aria-label="Pages from the sample casebook">
+        <figure>
+          <img src="assets/placeholders/portrait-1.jpg" alt="Placeholder casebook page">
+          <figcaption>Placeholder casebook page &middot; read the editions in <a href="archive.html" style="text-decoration:underline;text-underline-offset:.25em">the Index</a></figcaption>
+        </figure>
+      </aside>
+    </div>
+  </section>
+
+  <section class="section section--paper wrap" style="border-top:1px solid var(--rule-ink)" aria-labelledby="rooms-title">
+    <div class="limit rooms">
+      <figure>
+        <img src="assets/placeholders/square-1.jpg" alt="Placeholder session poster">
+        <figcaption>Placeholder session poster</figcaption>
+      </figure>
+      <div>
+        <h2 class="rule-head" id="rooms-title">The rooms it happens in</h2>
+        <div class="session" style="margin-top:1.2rem">
+          <h3>Sample session one</h3>
+          <p class="who">Guest Speaker One &middot; sample role &middot; sample date</p>
+          <ul>
+            <li>Placeholder topic one</li>
+            <li>Placeholder topic two</li>
+            <li>Placeholder topic three</li>
+          </ul>
+        </div>
+        <div class="session">
+          <h3>Sample session two</h3>
+          <p class="who">Guest Speaker Three &middot; sample role &middot; sample date</p>
+          <ul>
+            <li>Placeholder topic one</li>
+            <li>Placeholder topic two</li>
+          </ul>
+        </div>
+        <p style="margin:.8rem 0 0;font-size:.95rem;opacity:.85">
+          Placeholder closing note about the sessions.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--paper wrap" style="border-top:1px solid var(--rule-ink);padding-top:clamp(1.8rem,5vw,3rem)" aria-labelledby="episodes-title">
+    <div class="limit">
+      <h2 class="rule-head" id="episodes-title">The Series, the record so far</h2>
+      <div class="episodes">
+        <figure>
+          <img src="assets/covers/series-1.jpg" alt="Placeholder series cover">
+          <figcaption>S1 &middot; E1 &middot; Sample concept &middot; sample date</figcaption>
+        </figure>
+        <figure>
+          <img src="assets/covers/series-2.jpg" alt="Placeholder series cover">
+          <figcaption>S1 &middot; E2 &middot; Sample concept &middot; sample date</figcaption>
+        </figure>
+      </div>
+      <p style="margin:1.2rem 0 0;max-width:56ch">
+        Placeholder note on the episodes published so far.
+      </p>
+    </div>
+  </section>
+
+  <aside class="leadout">
+    <div class="limit">
+      The method's results, as sample pages:
+      <a href="work.html#record">sample results</a> &middot;
+      <a href="work.html">campaigns</a> &middot;
+      <a href="archive.html">everything published, in the Index</a>
+    </div>
+  </aside>
+
+</main>
+
+<footer class="colophon">
+  <div class="colophon__cols">
+    <div><p class="colophon__label">Contact</p><a href="#">Contact link (placeholder)</a></div>
+    <div><p class="colophon__label">College</p><a href="#">Sample College website</a></div>
+  </div>
+  <nav class="colophon__links" aria-label="Standing links">
+    <a href="theater3d.html">The theater</a><a href="work.html">Campaigns</a><a href="summit.html">Summit</a><a href="learn.html">The Case Method</a><a href="society.html">The Society</a><a href="archive.html">The Index</a>
+  </nav>
+  <p class="colophon__credit">
+    <span style="padding-left:0">The Society &middot; Sample College &copy; 2026</span>
+    <span>Set in Noto Serif Display, Crimson Pro and Montserrat</span>
+  </p>
+</footer>
+</body>
+</html>

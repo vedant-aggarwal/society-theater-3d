@@ -1,0 +1,273 @@
+{
+ "editions": {
+  "mb1": {
+   "id": "mb1",
+   "property": "The Bulletin",
+   "edition": "Sample edition 1",
+   "date": "September 2025",
+   "note": "The first sample issue.",
+   "post": "#",
+   "pages": [
+    {
+     "src": "assets/editions/mb1/p01.jpg",
+     "w": 707,
+     "h": 1000
+    },
+    {
+     "src": "assets/editions/mb1/p02.jpg",
+     "w": 707,
+     "h": 1000
+    },
+    {
+     "src": "assets/editions/mb1/p03.jpg",
+     "w": 707,
+     "h": 1000
+    },
+    {
+     "src": "assets/editions/mb1/p04.jpg",
+     "w": 707,
+     "h": 1000
+    }
+   ],
+   "count": 4
+  },
+  "mb4": {
+   "id": "mb4",
+   "property": "The Bulletin",
+   "edition": "Sample edition 4",
+   "date": "July 2026",
+   "note": "The fourth sample issue.",
+   "post": "#",
+   "pages": [
+    {
+     "src": "assets/editions/mb4/p01.jpg",
+     "w": 707,
+     "h": 1000
+    },
+    {
+     "src": "assets/editions/mb4/p02.jpg",
+     "w": 707,
+     "h": 1000
+    },
+    {
+     "src": "assets/editions/mb4/p03.jpg",
+     "w": 707,
+     "h": 1000
+    },
+    {
+     "src": "assets/editions/mb4/p04.jpg",
+     "w": 707,
+     "h": 1000
+    },
+    {
+     "src": "assets/editions/mb4/p05.jpg",
+     "w": 707,
+     "h": 1000
+    },
+    {
+     "src": "assets/editions/mb4/p06.jpg",
+     "w": 707,
+     "h": 1000
+    }
+   ],
+   "count": 6
+  },
+  "mkT": {
+   "id": "mkT",
+   "property": "The Casebook",
+   "edition": "Sample teaser",
+   "date": "February 2026",
+   "note": "A sample casebook teaser.",
+   "post": "#",
+   "pages": [
+    {
+     "src": "assets/editions/mkT/p01.jpg",
+     "w": 707,
+     "h": 1000
+    },
+    {
+     "src": "assets/editions/mkT/p02.jpg",
+     "w": 707,
+     "h": 1000
+    },
+    {
+     "src": "assets/editions/mkT/p03.jpg",
+     "w": 707,
+     "h": 1000
+    },
+    {
+     "src": "assets/editions/mkT/p04.jpg",
+     "w": 707,
+     "h": 1000
+    }
+   ],
+   "count": 4
+  },
+  "mv1": {
+   "id": "mv1",
+   "property": "The Series",
+   "edition": "S1 · E1",
+   "date": "July 2026",
+   "note": "Sample episode one.",
+   "post": "#",
+   "pages": [
+    {
+     "src": "assets/editions/mv1/p01.jpg",
+     "w": 800,
+     "h": 1000
+    },
+    {
+     "src": "assets/editions/mv1/p02.jpg",
+     "w": 800,
+     "h": 1000
+    },
+    {
+     "src": "assets/editions/mv1/p03.jpg",
+     "w": 800,
+     "h": 1000
+    }
+   ],
+   "count": 3
+  },
+  "mv2": {
+   "id": "mv2",
+   "property": "The Series",
+   "edition": "S1 · E2",
+   "date": "August 2026",
+   "note": "Sample episode two.",
+   "post": "#",
+   "pages": [
+    {
+     "src": "assets/editions/mv2/p01.jpg",
+     "w": 800,
+     "h": 1000
+    },
+    {
+     "src": "assets/editions/mv2/p02.jpg",
+     "w": 800,
+     "h": 1000
+    },
+    {
+     "src": "assets/editions/mv2/p03.jpg",
+     "w": 800,
+     "h": 1000
+    }
+   ],
+   "count": 3
+  },
+  "case1": {
+   "id": "case1",
+   "property": "Live project",
+   "edition": "Brand One",
+   "date": "October 2025",
+   "note": "A sample project deck.",
+   "post": "#",
+   "pages": [
+    {
+     "src": "assets/editions/case1/p01.jpg",
+     "w": 800,
+     "h": 1000
+    },
+    {
+     "src": "assets/editions/case1/p02.jpg",
+     "w": 800,
+     "h": 1000
+    },
+    {
+     "src": "assets/editions/case1/p03.jpg",
+     "w": 800,
+     "h": 1000
+    },
+    {
+     "src": "assets/editions/case1/p04.jpg",
+     "w": 800,
+     "h": 1000
+    },
+    {
+     "src": "assets/editions/case1/p05.jpg",
+     "w": 800,
+     "h": 1000
+    }
+   ],
+   "count": 5
+  },
+  "case2": {
+   "id": "case2",
+   "property": "Live project",
+   "edition": "Brand Two",
+   "date": "August to December 2025",
+   "note": "A sample project deck.",
+   "post": "#",
+   "pages": [
+    {
+     "src": "assets/editions/case2/p01.jpg",
+     "w": 800,
+     "h": 1000
+    },
+    {
+     "src": "assets/editions/case2/p02.jpg",
+     "w": 800,
+     "h": 1000
+    },
+    {
+     "src": "assets/editions/case2/p03.jpg",
+     "w": 800,
+     "h": 1000
+    },
+    {
+     "src": "assets/editions/case2/p04.jpg",
+     "w": 800,
+     "h": 1000
+    },
+    {
+     "src": "assets/editions/case2/p05.jpg",
+     "w": 800,
+     "h": 1000
+    }
+   ],
+   "count": 5
+  },
+  "case3": {
+   "id": "case3",
+   "property": "Live project",
+   "edition": "Brand Three",
+   "date": "March 2026",
+   "note": "A sample project deck.",
+   "post": "#",
+   "pages": [
+    {
+     "src": "assets/editions/case3/p01.jpg",
+     "w": 800,
+     "h": 1000
+    },
+    {
+     "src": "assets/editions/case3/p02.jpg",
+     "w": 800,
+     "h": 1000
+    },
+    {
+     "src": "assets/editions/case3/p03.jpg",
+     "w": 800,
+     "h": 1000
+    },
+    {
+     "src": "assets/editions/case3/p04.jpg",
+     "w": 800,
+     "h": 1000
+    },
+    {
+     "src": "assets/editions/case3/p05.jpg",
+     "w": 800,
+     "h": 1000
+    }
+   ],
+   "count": 5
+  }
+ },
+ "absent": {
+  "mb2": "Sample note: this placeholder edition has no pages in the archive.",
+  "mb3": "Sample note: this placeholder edition has no pages in the archive.",
+  "mk2": "Sample note: the full sample casebook is not in the archive."
+ },
+ "longEdge": 1000
+}

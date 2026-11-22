@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>SUMMIT · the flagship competition · The Society</title>
+<meta name="description" content="SUMMIT is the sample society’s flagship competition. Placeholder content.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:ital,wdth,wght@0,62.5..100,400..800;1,62.5..100,400..700&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="site.css">
+<style>
+  /* ---- the playbill ------------------------------------------- */
+  .bill{
+    background:var(--oxblood-deep);color:var(--off-white);
+    padding:clamp(1.6rem,5vw,3.2rem) var(--gutter) clamp(2.2rem,6vw,4rem);
+    position:relative;overflow:hidden;text-align:center;
+  }
+  .bill::before{
+    content:"";position:absolute;inset:-20%;pointer-events:none;
+    background:
+      linear-gradient(107deg,
+        color-mix(in srgb,var(--oxblood) 88%,transparent) 0%,
+        color-mix(in srgb,var(--oxblood-deep) 96%,transparent) 45%,
+        var(--oxblood-shadow) 100%),
+      radial-gradient(90% 55% at 50% 0%, rgba(255,225,180,.12), transparent 65%);
+  }
+  .bill > *{position:relative}
+  .bill__inner{max-width:52rem;margin-inline:auto}
+
+  /* the playbill's double rule: 3px over 1px, a device from print */
+  .dbl{border:0;height:5px;margin:1.1rem auto;max-width:52rem;
+    border-top:3px solid var(--rule);border-bottom:1px solid var(--rule);background:none}
+  .dbl--tight{max-width:34rem}
+
+  .bill__house{
+    font-family:var(--font-ui);font-weight:700;font-size:clamp(.72rem,.6rem + .5vw,.9rem);
+    letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin:0;
+  }
+  .bill__college{
+    font-family:var(--font-ui);font-weight:500;font-size:.64rem;
+    letter-spacing:.22em;text-transform:uppercase;opacity:.8;margin:.45rem 0 0;
+  }
+  .bill__presents{
+    font-family:var(--font-read);font-style:italic;font-size:1rem;
+    letter-spacing:.14em;opacity:.85;margin:1rem 0 0;
+  }
+  /* the name, set in the gold metal ramp: the one gradient this site allows */
+  .bill__name{
+    margin:.2rem 0 0;
+    font-family:var(--font-display);font-stretch:62.5%;font-weight:800;
+    font-size:clamp(4rem,17vw,12.5rem);line-height:.9;letter-spacing:.03em;
+    background-image:linear-gradient(178deg,#FFF0C4 8%,var(--gold) 38%,#B9975B 62%,#FFF0C4 96%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .bill__sub{
+    font-family:var(--font-display);font-weight:600;
+    font-size:clamp(1.05rem,.9rem + 1.2vw,1.6rem);letter-spacing:.12em;
+    text-transform:uppercase;color:var(--gold);margin:.7rem 0 0;
+  }
+  .bill__date{
+    font-family:var(--font-ui);font-weight:600;font-size:clamp(.78rem,.7rem + .4vw,.95rem);
+    letter-spacing:.2em;text-transform:uppercase;margin:1.05rem 0 0;
+  }
+  .bill__venue{font-family:var(--font-read);font-style:italic;font-size:1.02rem;opacity:.9;margin:.4rem 0 0}
+  .bill__terms{
+    display:flex;flex-wrap:wrap;justify-content:center;gap:.3rem 2.2rem;
+    margin:1rem 0 0;padding:0;list-style:none;
+    font-family:var(--font-ui);font-size:.7rem;letter-spacing:.16em;
+    text-transform:uppercase;font-weight:600;
+  }
+  .bill__terms b{color:var(--gold);font-family:var(--font-display);font-stretch:75%;
+    font-weight:700;font-size:1.5em;letter-spacing:.02em;margin-right:.3em}
+
+  /* the bill of partners, set as playbill credits */
+  .credits{margin:1.2rem auto 0;max-width:40rem;padding:0;list-style:none}
+  .credits li{
+    display:flex;align-items:baseline;gap:.9rem;padding:.42rem 0;
+    border-bottom:1px solid color-mix(in srgb,var(--gold) 18%,transparent);
+  }
+  .credits li:last-child{border-bottom:0}
+  .credits .role{
+    flex:0 0 11.5rem;text-align:right;
+    font-family:var(--font-ui);font-size:.62rem;letter-spacing:.18em;
+    text-transform:uppercase;opacity:.7;
+  }
+  .credits .names{
+    text-align:left;font-family:var(--font-display);font-weight:600;
+    font-size:clamp(1rem,.9rem + .7vw,1.35rem);color:var(--gold);line-height:1.25;
+  }
+  @media (max-width:34rem){
+    .credits li{flex-direction:column;gap:.1rem;text-align:center}
+    .credits .role{flex:none;text-align:center}
+    .credits .names{text-align:center}
+  }
+
+  /* ---- the account of the day ---------------------------------- */
+  .account{display:grid;gap:2rem;align-items:start}
+  @media (min-width:56rem){ .account{grid-template-columns:minmax(0,1fr) minmax(0,24rem);gap:3.5rem} }
+  .account__text p{margin:0 0 1.1em;max-width:var(--measure)}
+  .account__pull{
+    margin:1.6rem 0;padding:1rem 0;border-block:1px solid var(--rule-ink);
+    font-family:var(--font-display);font-weight:600;font-size:clamp(1.25rem,1rem + 1.4vw,1.8rem);
+    line-height:1.25;color:var(--oxblood);text-wrap:balance;
+  }
+  .account__pull cite{display:block;margin-top:.55rem;font-style:normal;
+    font-family:var(--font-ui);font-size:.64rem;letter-spacing:.14em;
+    text-transform:uppercase;opacity:.65}
+  .poster{margin:0}
+  .poster img{width:100%;display:block;outline:1px solid var(--rule-ink);outline-offset:-1px}
+  .poster figcaption{margin-top:.55rem;font-family:var(--font-ui);font-size:.66rem;
+    letter-spacing:.1em;text-transform:uppercase;opacity:.62;line-height:1.6}
+
+  /* the honest register: one edition on record */
+  .editions{margin:.8rem 0 0}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="topbar__mark" href="theater3d.html">THE SOCIETY<small>A SAMPLE STUDENT SOCIETY</small></a>
+  <nav class="topbar__nav" aria-label="Primary">
+    <a href="work.html">Campaigns</a>
+    <a href="summit.html" aria-current="page" style="text-decoration:underline;text-underline-offset:.3em">Summit</a>
+    <a href="learn.html">Case Method</a>
+    <a href="society.html">Society</a>
+    <a href="archive.html">Index</a>
+  </nav>
+</header>
+
+<div class="subbar subbar--dark">
+  <a href="theater3d.html">&larr; The theater</a>
+  <span>The flagship competition &middot; sample</span>
+</div>
+
+<main>
+
+  <section class="bill" aria-labelledby="summit-name">
+    <div class="bill__inner">
+      <p class="bill__house">The Society &middot; A Sample Student Society</p>
+      <p class="bill__college">Sample College &middot; Sample University</p>
+      <hr class="dbl" aria-hidden="true">
+      <p class="bill__presents">presents</p>
+      <h1 class="bill__name" id="summit-name">SUMMIT</h1>
+      <p class="bill__sub">The Annual Flagship Competition</p>
+      <hr class="dbl dbl--tight" aria-hidden="true">
+      <p class="bill__date">Sample date &middot; 00:00</p>
+      <p class="bill__venue">Sample College, Sample University</p>
+      <ul class="bill__terms">
+        <li><b>TBA</b> prize pool</li>
+        <li><b>Open</b> to all participants</li>
+        <li>registrations on a sample platform</li>
+      </ul>
+      <hr class="dbl" aria-hidden="true">
+      <ul class="credits" aria-label="Partners and sponsors (sample)">
+        <li><span class="role">Knowledge partners</span><span class="names">Partner One &middot; Partner Two</span></li>
+        <li><span class="role">Travel partner</span><span class="names">Partner Three</span></li>
+        <li><span class="role">Associate sponsors</span><span class="names">Sponsor One &middot; Sponsor Two</span></li>
+        <li><span class="role">Powered by</span><span class="names">Sample Platform</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section section--paper wrap" aria-labelledby="account-title">
+   <div class="limit account">
+    <div class="account__text">
+      <h2 class="rule-head" id="account-title">The premise</h2>
+      <p style="margin-top:1rem">
+        Placeholder premise for the sample competition: where the case method is
+        <em>"tested against strangers"</em>. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+      </p>
+      <p>
+        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+      </p>
+      <blockquote class="account__pull">
+        "A placeholder launch line for the sample competition."
+        <cite>Sample launch note</cite>
+      </blockquote>
+      <p>
+        Placeholder closing paragraph for the account of the competition.
+      </p>
+
+      <h2 class="rule-head" style="font-size:clamp(1.4rem,1rem + 1.8vw,2.1rem);margin-top:2.2rem">The record</h2>
+      <ul class="index editions">
+        <li class="index__row"><span class="index__inert">
+          <span class="index__ed">Ed. 1</span>
+          <span class="index__title">SUMMIT, sample edition one</span>
+          <span class="index__by">Sample date</span>
+        </span></li>
+        <li class="index__row index__row--gap"><span class="index__inert">
+          <span class="index__ed">Ed. 2</span>
+          <span class="index__title">The next staging, when the society announces it</span>
+          <span class="index__by index__note">Not yet announced</span>
+        </span></li>
+      </ul>
+      <p style="margin-top:1rem;font-family:var(--font-ui);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;opacity:.6">
+        Source: <a href="#" style="text-decoration:underline;text-underline-offset:.25em">placeholder</a>
+      </p>
+    </div>
+
+    <figure class="poster">
+      <img src="assets/placeholders/poster-1.jpg" alt="Placeholder competition poster">
+      <figcaption>Placeholder caption for the competition poster.</figcaption>
+    </figure>
+   </div>
+  </section>
+
+</main>
+
+<footer class="colophon">
+  <div class="colophon__cols">
+    <div><p class="colophon__label">Contact</p><a href="#">Contact link (placeholder)</a></div>
+    <div><p class="colophon__label">College</p><a href="#">Sample College website</a></div>
+  </div>
+  <nav class="colophon__links" aria-label="Standing links">
+    <a href="theater3d.html">The theater</a><a href="work.html">Campaigns</a><a href="summit.html">Summit</a><a href="learn.html">The Case Method</a><a href="society.html">The Society</a><a href="archive.html">The Index</a>
+  </nav>
+  <p class="colophon__credit">
+    <span style="padding-left:0">The Society &middot; Sample College &copy; 2026</span>
+    <span>Set in Noto Serif Display, Crimson Pro and Montserrat</span>
+  </p>
+</footer>
+</body>
+</html>

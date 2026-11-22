@@ -1,0 +1,306 @@
+
+.lobby {
+  --throw: 23deg;
+  --lens: -13%;
+  --plank: 11.5rem;
+
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: clamp(3.2rem, 7vw, 5.5rem) var(--gutter) clamp(3rem, 6vw, 4.5rem);
+  background:
+    conic-gradient(from calc(180deg - var(--throw)) at 50% var(--lens),
+      transparent 0deg,
+      rgba(255, 228, 190, .018) calc(var(--throw) * .34),
+      rgba(255, 232, 196, .090) calc(var(--throw) * .72),
+      rgba(255, 238, 208, .120) var(--throw),
+      rgba(255, 232, 196, .090) calc(var(--throw) * 1.28),
+      rgba(255, 228, 190, .018) calc(var(--throw) * 1.66),
+      transparent calc(var(--throw) * 2)),
+    radial-gradient(72% 56% at 50% 34%, rgba(255, 200, 146, .055), transparent 78%),
+    radial-gradient(74% 58% at 50% 34%, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, .55) 66%, rgba(0, 0, 0, .9) 100%),
+    repeating-linear-gradient(90deg,
+      rgba(255, 226, 186, .05) 0 1px,
+      rgba(0, 0, 0, 0) 1px calc(var(--plank) - 2px),
+      rgba(0, 0, 0, .34) calc(var(--plank) - 2px) var(--plank)),
+    radial-gradient(120% 96% at 50% 40%, transparent 34%, rgba(0, 0, 0, .62) 100%),
+    linear-gradient(180deg, #150505 0%, #1f0a07 38%, #230c08 60%, #150505 100%);
+  color: #F0F0F0;
+}
+
+/* the lit rectangle the lamp actually throws, keystoned, and fringed warm on
+   one edge and cool on the other because a lens does not focus every
+   wavelength at the same place */
+.lobby__gate {
+  position: absolute;
+  left: 50%;
+  top: clamp(1.2rem, 2.6vw, 2.2rem);
+  bottom: clamp(1.2rem, 2.6vw, 2.2rem);
+  width: min(66rem, calc(100% - var(--gutter)));
+  z-index: 1;
+  pointer-events: none;
+  transform: translateX(-50%) perspective(1400px) rotateX(1.1deg) skewY(-.22deg);
+  background:
+    linear-gradient(180deg,
+      rgba(255, 234, 200, .10) 0%,
+      rgba(255, 222, 180, .058) 44%,
+      rgba(255, 210, 164, .035) 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 240, 210, .12),
+    inset 2px 0 0 0 rgba(255, 196, 130, .10),
+    inset -2px 0 0 0 rgba(150, 190, 255, .055),
+    inset 0 0 40px rgba(255, 224, 180, .075);
+  animation: lobby-flicker 7.3s ease-in-out infinite;
+}
+
+.lobby__dust {
+  position: absolute;
+  inset: 0 -12%;
+  z-index: 2;
+  pointer-events: none;
+  opacity: .45;
+  mask-image: conic-gradient(from calc(180deg - var(--throw)) at 50% var(--lens),
+    transparent 0deg, #000 calc(var(--throw) * .5), #000 calc(var(--throw) * 1.5), transparent calc(var(--throw) * 2));
+  -webkit-mask-image: conic-gradient(from calc(180deg - var(--throw)) at 50% var(--lens),
+    transparent 0deg, #000 calc(var(--throw) * .5), #000 calc(var(--throw) * 1.5), transparent calc(var(--throw) * 2));
+  background-image:
+    radial-gradient(circle at 22% 34%, rgba(255, 242, 214, .55) 0 .7px, transparent 1.4px),
+    radial-gradient(circle at 71% 12%, rgba(255, 238, 206, .40) 0 .9px, transparent 1.8px),
+    radial-gradient(circle at 47% 78%, rgba(255, 246, 226, .30) 0 1.1px, transparent 2.2px);
+  background-size: 137px 137px, 211px 211px, 313px 313px;
+  animation: lobby-motes 41s linear infinite;
+}
+
+.lobby__inner {
+  position: relative;
+  z-index: 3;
+  max-width: 64rem;
+  margin-inline: auto;
+}
+
+/* --------------------------------------------------------------
+   the sentence
+   -------------------------------------------------------------- */
+.lobby__lede {
+  max-width: 40rem;
+  margin: 0 auto clamp(2rem, 4vw, 3rem);
+  text-align: center;
+  font-family: var(--font-read);
+  font-size: clamp(1.1rem, .98rem + .62vw, 1.5rem);
+  line-height: 1.5;
+  color: #FFF6E4;
+  text-shadow:
+    0 0 1px rgba(255, 240, 208, .8),
+    0 0 16px rgba(255, 205, 140, .26),
+    0 0 46px rgba(255, 180, 110, .14);
+  transition: opacity .4s ease, filter .4s ease;
+}
+.lobby__lede strong {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-style: normal;
+}
+
+/* --------------------------------------------------------------
+   THE STILLS
+   Prints pinned to the wall, overlapping, each one hung a degree
+   or two off square because nobody pins photographs straight.
+   -------------------------------------------------------------- */
+.lobby__strip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  list-style: none;
+  margin: 0;
+  padding: 0 0 .5rem;
+}
+
+/* Deliberately NOT positioned. The caption for each print has to land in the
+   shared slot at the bottom of the section, so it must resolve against
+   .lobby__inner; a positioned .lobby__still would capture it and pin every
+   caption on top of its own photograph instead. The print carries the
+   positioning, and the pin, instead. */
+.lobby__still {
+  margin-inline: -.9rem;
+  flex: 0 0 auto;
+}
+
+.lobby__print {
+  position: relative;
+  display: block;
+  padding: .48rem .48rem 1.35rem;     /* the border of a real print: even on three sides, deep at the foot */
+  border: 0;
+  background: linear-gradient(180deg, #F0F0F0 0%, #E4D6B4 100%);
+  border-radius: 1px;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, .5), 0 1px 3px rgba(0, 0, 0, .45);
+  transform: rotate(var(--tilt)) translateY(var(--drop));
+  transition:
+    transform .38s cubic-bezier(.2, .8, .25, 1),
+    box-shadow .38s ease,
+    filter .38s ease,
+    opacity .38s ease;
+}
+/* One height for every print, and the width follows the frame. Eight
+   photographs at eight aspect ratios hung on one line only reads if the tops
+   and bottoms agree; it is the width that is allowed to vary, the way prints
+   pinned along a wall actually do. */
+.lobby__print img {
+  display: block;
+  /* sized so eight prints, their borders and their overlap land inside the lit
+     rectangle. Spilling past the gate read as a bug rather than as atmosphere. */
+  height: clamp(7rem, 10vw, 10.75rem);
+  width: auto;
+  max-width: none;
+  object-fit: cover;
+  background: #2a1210;
+}
+.lobby__print:focus-visible { outline: 2px solid var(--gold); outline-offset: 4px; }
+
+/* the pin */
+.lobby__print::before {
+  content: "";
+  position: absolute;
+  top: -.3rem; left: 50%;
+  z-index: 4;
+  width: .42rem; height: .42rem;
+  border-radius: 50%;
+  background: radial-gradient(circle at 34% 30%, #FFF0C4, var(--gold) 52%, #8a6a2c 100%);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .6);
+  transform: translate(-50%, 0) rotate(var(--tilt));
+  transform-origin: 50% 50%;
+  pointer-events: none;
+}
+
+/* Look at one and it squares up and comes forward, and everything else steps
+   back. Gated on :has() so crossing the gap between two prints does not dim
+   the whole wall and lift nothing. */
+.lobby__strip:has(.lobby__print:hover) .lobby__still:not(:hover) .lobby__print,
+.lobby__strip:has(.lobby__print:focus-visible) .lobby__still:not(:focus-within) .lobby__print {
+  filter: brightness(.52) saturate(.7);
+  opacity: .8;
+}
+.lobby__print:hover,
+.lobby__print:focus-visible {
+  transform: rotate(0deg) translateY(calc(var(--drop) - .7rem)) scale(1.06);
+  box-shadow: 0 20px 46px rgba(0, 0, 0, .62), 0 2px 6px rgba(0, 0, 0, .5);
+  filter: brightness(1.06);
+  z-index: 5;
+}
+
+/* :has on the container, not a sibling combinator: the sentence sits BEFORE
+   the strip in the document, so `~` can never reach it. */
+.lobby__inner:has(.lobby__print:hover) .lobby__lede,
+.lobby__inner:has(.lobby__print:focus-visible) .lobby__lede {
+  opacity: .42;
+  filter: blur(1px);
+}
+
+/* --------------------------------------------------------------
+   the caption slot: one line, under the strip, that changes to
+   whichever print is being looked at. It says what the photograph
+   shows and when, and it links to the post it came out of.
+   -------------------------------------------------------------- */
+.lobby__slot {
+  position: relative;
+  min-height: 3.4rem;
+  margin-top: 1.4rem;
+  text-align: center;
+}
+/* resolves against .lobby__inner, which is why .lobby__still must stay
+   unpositioned. Every caption occupies the same rectangle; only the one whose
+   print is being looked at is visible. */
+.lobby__cap {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  min-height: 3.4rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: .3rem;
+  opacity: 0;
+  transition: opacity .3s ease;
+  pointer-events: none;
+}
+.lobby__still:hover .lobby__cap,
+.lobby__still:focus-within .lobby__cap { opacity: 1; }
+
+.lobby__capline {
+  font-family: var(--font-read);
+  font-size: .95rem;
+  color: #FFF6E4;
+  opacity: .9;
+}
+.lobby__capwhen {
+  font-family: var(--font-ui);
+  font-size: .5625rem; font-weight: 700;
+  letter-spacing: .2em; text-transform: uppercase;
+  color: rgba(232, 199, 122, .8);
+}
+
+/* the resting state of the slot: what to do next, not what to do now */
+.lobby__rest {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.4rem;
+  transition: opacity .3s ease;
+}
+.lobby__inner:has(.lobby__print:hover) .lobby__rest,
+.lobby__inner:has(.lobby__print:focus-visible) .lobby__rest { opacity: 0; pointer-events: none; }
+
+.lobby__rest a {
+  font-family: var(--font-ui);
+  font-size: .625rem; font-weight: 700;
+  letter-spacing: .18em; text-transform: uppercase;
+  color: rgba(255, 246, 228, .82);
+  text-decoration: none;
+  padding-bottom: .25rem;
+  border-bottom: 1px solid rgba(232, 199, 122, .4);
+  transition: color .25s ease, border-color .25s ease;
+}
+.lobby__rest a:hover { color: #FFF6E4; border-bottom-color: var(--gold); }
+
+@keyframes lobby-flicker {
+  0%, 100% { opacity: 1; }
+  17%      { opacity: .955; }
+  19%      { opacity: 1; }
+  53%      { opacity: .972; }
+  56%      { opacity: .994; }
+  81%      { opacity: .948; }
+  84%      { opacity: 1; }
+}
+@keyframes lobby-motes {
+  from { background-position: 0 0, 0 0, 0 0; }
+  to   { background-position: -60px -137px, 45px -211px, -25px -313px; }
+}
+
+/* --------------------------------------------------------------
+   narrow: the wall becomes a strip you swipe, and every caption
+   stands under its own print, because there is no hover to give
+   -------------------------------------------------------------- */
+@media (max-width: 60rem) {
+  .lobby { --plank: 7rem; }
+  .lobby__strip {
+    justify-content: flex-start;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: .3rem;
+    padding-inline: var(--gutter);
+    margin-inline: calc(var(--gutter) * -1);
+    scrollbar-width: none;
+  }
+  .lobby__strip::-webkit-scrollbar { display: none; }
+  .lobby__still { margin-inline: 0; scroll-snap-align: center; flex: 0 0 auto; }
+  .lobby__print { transform: rotate(var(--tilt)); }
+  .lobby__slot { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lobby__gate, .lobby__dust { animation: none; }
+  .lobby__print { transition-duration: .01ms; }
+  .lobby__print:hover, .lobby__print:focus-visible { transform: rotate(0deg) translateY(var(--drop)); }
+}

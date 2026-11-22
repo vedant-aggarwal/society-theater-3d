@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Every sample edition in one index. Placeholder content.">
+<meta name="robots" content="noindex,nofollow">
+<title>The Index · everything The Society has published</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:ital,wdth,wght@0,62.5..100,400..800;1,62.5..100,400..700&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="site.css">
+<style>
+  .search{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin:0 0 1rem}
+  .search input{
+    flex:1 1 16rem;min-width:0;padding:.6rem .75rem;border:1px solid var(--rule-ink);
+    background:transparent;font-family:var(--font-read);font-size:1rem;color:inherit;border-radius:0;
+  }
+  .search input:focus-visible{outline:2px solid var(--oxblood);outline-offset:1px}
+  .count{font-family:var(--font-ui);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;opacity:.6}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="topbar__mark" href="theater3d.html">THE SOCIETY<small>A SAMPLE STUDENT SOCIETY</small></a>
+  <nav class="topbar__nav" aria-label="Primary">
+    <a href="work.html">Campaigns</a>
+    <a href="summit.html">Summit</a>
+    <a href="learn.html">Case Method</a>
+    <a href="society.html">Society</a>
+    <a href="archive.html" aria-current="page" style="text-decoration:underline;text-underline-offset:.3em">Index</a>
+  </nav>
+</header>
+
+<div class="subbar">
+  <a href="theater3d.html">&larr; The cover</a>
+  <span class="count" id="count">entries</span>
+</div>
+
+<main class="section section--paper wrap">
+ <div class="limit">
+  <h1 class="stack" aria-label="The Index">
+    <span class="stack__line" aria-hidden="true">Index</span>
+    <span class="stack__line" aria-hidden="true">Index</span>
+    <span class="stack__line">Index</span>
+  </h1>
+  <p style="max-width:56ch;margin:0 0 1.6rem">
+    Everything the sample society has published, in one place, including sample editions
+    that are recorded but not archived. All entries are placeholders.
+  </p>
+  <p style="max-width:56ch;margin:0 0 1.6rem">
+    Rows marked <span class="index__note">Readable</span> open a sample article page. The
+    rest are catalogued only.
+  </p>
+
+  <div class="search">
+    <label class="eyebrow" for="q" style="opacity:.6">Search</label>
+    <input id="q" type="search" placeholder="A title, a writer, a college…" autocomplete="off">
+    <button type="button" id="sortCollege" class="eyebrow" style="padding:.55rem .8rem;border:1px solid var(--rule-ink);background:transparent;cursor:pointer">Sort by college</button>
+  </div>
+
+  <ul class="filters" role="group" aria-label="Filter the index">
+    <li><button type="button" data-filter="all" aria-pressed="true">Everything</button></li>
+    <li><button type="button" data-filter="bulletin" aria-pressed="false">The Bulletin</button></li>
+    <li><button type="button" data-filter="casebook" aria-pressed="false">The Casebook</button></li>
+    <li><button type="button" data-filter="series" aria-pressed="false">The Series</button></li>
+    <li><button type="button" data-filter="external" aria-pressed="false">Written outside Sample College</button></li>
+  </ul>
+
+  <ul class="index" id="indexList">
+    <li class="index__row" data-prop="bulletin" data-scope="home"><a href="article.html">
+      <span class="index__ed">Ed. 4</span>
+      <span class="index__title">Sample article one <span class="index__note">Readable</span></span>
+      <span class="index__by">Author One &middot; Sample College</span>
+    </a></li>
+    <li class="index__row" data-prop="bulletin" data-scope="home"><a href="article-2.html">
+      <span class="index__ed">Ed. 4</span>
+      <span class="index__title">Sample article two <span class="index__note">Readable</span></span>
+      <span class="index__by">Author Two &middot; Sample College</span>
+    </a></li>
+    <li class="index__row" data-prop="bulletin" data-scope="home"><a href="article-3.html">
+      <span class="index__ed">Ed. 4</span>
+      <span class="index__title">Sample article three <span class="index__note">Readable</span></span>
+      <span class="index__by">Author Three &middot; Sample College</span>
+    </a></li>
+    <li class="index__row" data-prop="bulletin" data-scope="home"><a href="article-4.html">
+      <span class="index__ed">Ed. 4</span>
+      <span class="index__title">Sample article four <span class="index__note">Readable</span></span>
+      <span class="index__by">Author Four &middot; Sample College</span>
+    </a></li>
+
+    <li class="index__row" data-prop="bulletin" data-scope="external"><span class="index__inert">
+      <span class="index__ed">Ed. 3</span>
+      <span class="index__title">Sample article five <span class="index__note index__note--soft">In the edition</span></span>
+      <span class="index__by">Author Five &middot; Sample College Two</span>
+    </span></li>
+    <li class="index__row" data-prop="bulletin" data-scope="external"><span class="index__inert">
+      <span class="index__ed">Ed. 3</span>
+      <span class="index__title">Sample article six <span class="index__note index__note--soft">In the edition</span></span>
+      <span class="index__by">Author Six &middot; Sample College Three</span>
+    </span></li>
+    <li class="index__row" data-prop="bulletin" data-scope="external"><span class="index__inert">
+      <span class="index__ed">Ed. 2</span>
+      <span class="index__title">Sample article seven <span class="index__note index__note--soft">In the edition</span></span>
+      <span class="index__by">Author Seven &middot; Sample College Four</span>
+    </span></li>
+    <li class="index__row" data-prop="bulletin" data-scope="external"><span class="index__inert">
+      <span class="index__ed">Ed. 2</span>
+      <span class="index__title">Sample article eight <span class="index__note index__note--soft">In the edition</span></span>
+      <span class="index__by">Author Eight &middot; Sample College Two</span>
+    </span></li>
+    <li class="index__row" data-prop="bulletin" data-scope="home"><span class="index__inert">
+      <span class="index__ed">Ed. 1</span>
+      <span class="index__title">Sample article nine <span class="index__note index__note--soft">In the edition</span></span>
+      <span class="index__by">Author Nine &middot; Sample College</span>
+    </span></li>
+    <li class="index__row" data-prop="bulletin" data-scope="home"><span class="index__inert">
+      <span class="index__ed">Ed. 1</span>
+      <span class="index__title">Sample article ten <span class="index__note index__note--soft">In the edition</span></span>
+      <span class="index__by">Author Ten &middot; Sample College</span>
+    </span></li>
+
+    <li class="index__row" data-prop="casebook" data-scope="home"><a href="archive.html">
+      <span class="index__ed">Casebook 2</span>
+      <span class="index__title">The Casebook, sample second edition</span>
+      <span class="index__by">Sample page count &middot; sample year</span>
+    </a></li>
+    <li class="index__row" data-prop="casebook" data-scope="home"><a href="archive.html">
+      <span class="index__ed">Casebook 1</span>
+      <span class="index__title">The Casebook, sample first edition</span>
+      <span class="index__by">Sample page count &middot; sample year</span>
+    </a></li>
+
+    <li class="index__row index__row--gap" data-prop="casebook" data-scope="home"><span class="index__inert">
+      <span class="index__ed">Casebook 3</span>
+      <span class="index__title">The Casebook, sample third edition</span>
+      <span class="index__by index__note">Recorded, not yet archived</span>
+    </span></li>
+    <li class="index__row index__row--gap" data-prop="bulletin" data-scope="home"><span class="index__inert">
+      <span class="index__ed">Ed. 5</span>
+      <span class="index__title">The Bulletin, sample edition 5</span>
+      <span class="index__by index__note">Recorded, not yet archived</span>
+    </span></li>
+    <li class="index__row index__row--gap" data-prop="series" data-scope="home"><span class="index__inert">
+      <span class="index__ed">The Series</span>
+      <span class="index__title">Season 1, Episode 2</span>
+      <span class="index__by index__note">Recorded, not yet archived</span>
+    </span></li>
+  </ul>
+ </div>
+</main>
+
+<footer class="colophon">
+  <div class="colophon__cols">
+    <div><p class="colophon__label">Contact</p><a href="#">Contact link (placeholder)</a></div>
+    <div><p class="colophon__label">College</p><a href="#">Sample College website</a></div>
+  </div>
+  <nav class="colophon__links" aria-label="Standing links">
+    <a href="theater3d.html">The theater</a><a href="work.html">Campaigns</a><a href="summit.html">Summit</a><a href="learn.html">The Case Method</a><a href="society.html">The Society</a><a href="archive.html">The Index</a>
+  </nav>
+  <p class="colophon__credit">
+    <span style="padding-left:0">The Society &middot; Sample College &copy; 2026</span>
+    <span>Set in Noto Serif Display, Crimson Pro and Montserrat</span>
+  </p>
+</footer>
+
+<script>
+(function(){
+  var list = document.getElementById('indexList');
+  var rows = Array.prototype.slice.call(list.querySelectorAll('.index__row'));
+  var buttons = document.querySelectorAll('.filters button');
+  var q = document.getElementById('q');
+  var count = document.getElementById('count');
+  var filter = 'all';
+
+  function apply(){
+    var term = q.value.trim().toLowerCase();
+    var shown = 0;
+    rows.forEach(function(r){
+      var matchFilter = filter === 'all'
+        || r.dataset.prop === filter
+        || (filter === 'external' && r.dataset.scope === 'external');
+      var matchTerm = !term || r.textContent.toLowerCase().indexOf(term) !== -1;
+      r.hidden = !(matchFilter && matchTerm);
+      if(!r.hidden) shown++;
+    });
+    count.textContent = shown + (shown === 1 ? ' entry' : ' entries');
+  }
+
+  buttons.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      filter = btn.dataset.filter;
+      buttons.forEach(function(b){ b.setAttribute('aria-pressed', String(b === btn)); });
+      apply();
+    });
+  });
+  q.addEventListener('input', apply);
+
+  /* sort by college · the axis nobody expects, and the one this archive is unusual on */
+  var sorted = false;
+  document.getElementById('sortCollege').addEventListener('click', function(){
+    var key = function(r){
+      var by = r.querySelector('.index__by');
+      var t = by ? by.textContent : '';
+      var parts = t.split('·');
+      return (parts[1] || parts[0] || '').trim().toLowerCase();
+    };
+    var order = rows.slice();
+    if(!sorted){ order.sort(function(a,b){ return key(a).localeCompare(key(b)); }); }
+    order.forEach(function(r){ list.appendChild(r); });
+    sorted = !sorted;
+    this.textContent = sorted ? 'Back to edition order' : 'Sort by college';
+  });
+
+  apply();
+})();
+</script>
+</body>
+</html>

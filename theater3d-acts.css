@@ -1,0 +1,411 @@
+
+.cases {
+  --plank: 11.5rem;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: clamp(3.4rem, 7vw, 5.5rem) var(--gutter) clamp(3.4rem, 7vw, 5rem);
+  color: #F0F0F0;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, .5) 100%),
+    repeating-linear-gradient(90deg,
+      rgba(255, 226, 186, .04) 0 1px,
+      rgba(0, 0, 0, 0) 1px calc(var(--plank) - 2px),
+      rgba(0, 0, 0, .3) calc(var(--plank) - 2px) var(--plank)),
+    linear-gradient(180deg, #150505 0%, #1f0a07 42%, #1a0806 100%);
+}
+
+.cases__inner { max-width: 70rem; margin-inline: auto; }
+
+.cases__eyebrow {
+  font-family: var(--font-ui);
+  font-size: .625rem; font-weight: 700;
+  letter-spacing: .24em; text-transform: uppercase;
+  color: var(--gold);
+  margin: 0 0 .7rem;
+}
+.cases__title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(2rem, 1.3rem + 3vw, 3.4rem);
+  line-height: 1.02;
+  margin: 0;
+}
+.cases__lede {
+  max-width: 33rem;
+  margin: .9rem 0 clamp(1.8rem, 3.5vw, 2.6rem);
+  line-height: 1.6;
+  opacity: .62;
+}
+
+/* --------------------------------------------------------------
+   the board: a machined object bolted to the wall
+   -------------------------------------------------------------- */
+.board {
+  position: relative;
+  border-radius: 2px;
+  padding: .5rem;
+  background: linear-gradient(180deg, #8a6a2c 0%, #E8C77A 8%, #B9975B 46%, #8a6a2c 100%);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, .55), 0 2px 0 rgba(255, 240, 200, .12) inset;
+}
+/* the four bolts holding it up */
+.board::before,
+.board::after {
+  content: "";
+  position: absolute;
+  top: .42rem; bottom: .42rem;
+  width: .3rem;
+  background:
+    radial-gradient(circle at 50% .55rem, #4a3a18 0 .12rem, transparent .13rem),
+    radial-gradient(circle at 50% calc(100% - .55rem), #4a3a18 0 .12rem, transparent .13rem);
+  pointer-events: none;
+}
+.board::before { left: .42rem; }
+.board::after { right: .42rem; }
+
+.board__head,
+.board__rowbtn {
+  display: grid;
+  grid-template-columns: 1.2rem 11rem 7.5rem minmax(0, 1fr) 8.5rem 7rem;
+  align-items: center;
+  gap: .75rem;
+  width: 100%;
+  text-align: left;
+}
+/* the header uses the row's own grid and padding, so a label sits over the
+   column it names rather than near it */
+.board__head {
+  padding: .45rem .8rem .5rem;
+  font-family: var(--font-ui);
+  font-size: .5rem; font-weight: 700;
+  letter-spacing: .22em; text-transform: uppercase;
+  color: rgba(20, 6, 4, .66);
+}
+.board__head .board__cell--client { grid-column: 2; }
+/* the head's cells are labels, not data: they do not inherit the row styling */
+.board__head .board__cell {
+  font-family: var(--font-ui);
+  font-size: .5rem; font-weight: 700;
+  letter-spacing: .22em; text-transform: uppercase;
+  color: rgba(20, 6, 4, .66);
+}
+
+.board__rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  background: #0d0303;
+  border-radius: 1px;
+  box-shadow: 0 0 0 1px rgba(20, 6, 4, .7) inset;
+  overflow: hidden;
+}
+.board__row + .board__row { border-top: 1px solid rgba(232, 199, 122, .12); }
+
+.board__rowbtn {
+  padding: .85rem .8rem;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: #F0F0F0;
+  cursor: pointer;
+  transition: background-color .3s ease;
+}
+.board__rowbtn:hover { background: rgba(232, 199, 122, .07); }
+.board__rowbtn:focus-visible { outline: 2px solid var(--gold); outline-offset: -2px; }
+.board__row.is-on .board__rowbtn { background: rgba(232, 199, 122, .11); }
+
+/* the lamp beside the live row */
+.board__lamp {
+  width: .5rem; height: .5rem;
+  border-radius: 50%;
+  background: rgba(232, 199, 122, .14);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, .5) inset;
+  transition: background-color .3s ease, box-shadow .3s ease;
+}
+.board__row.is-on .board__lamp {
+  background: var(--gold);
+  box-shadow: 0 0 9px rgba(232, 199, 122, .8);
+}
+
+.board__cell--ran,
+.board__cell--what,
+.board__cell--unit {
+  font-family: var(--font-ui);
+  font-size: .625rem; font-weight: 600;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: rgba(240, 240, 240, .56);
+}
+.board__rowbtn .board__cell--what { letter-spacing: .04em; text-transform: none; font-size: .8rem; color: rgba(240, 240, 240, .72); }
+.board__cell--unit { color: rgba(232, 199, 122, .62); }
+
+/* --------------------------------------------------------------
+   THE FLAPS
+   One cell per character, split across the middle the way the real
+   ones are, with the hairline where the two leaves meet.
+   -------------------------------------------------------------- */
+.flapline { display: flex; gap: 1px; }
+
+.flap {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  min-width: .82em;
+  padding: .12em .06em;
+  border-radius: 1px;
+  background: linear-gradient(180deg, #241512 0%, #1a0d0b 49.6%, #120705 50.4%, #221310 100%);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, .6), 0 0 0 1px rgba(0, 0, 0, .5);
+  color: var(--gold);
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums lining-nums;
+  line-height: 1;
+}
+/* the seam */
+.flap::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; top: 50%;
+  height: 1px;
+  background: rgba(0, 0, 0, .72);
+  pointer-events: none;
+}
+.flap.is-turning { color: rgba(232, 199, 122, .72); }
+.flap--gap { background: none; box-shadow: none; min-width: .34em; }
+.flap--gap::after { display: none; }
+
+.board__cell--client .flap { font-size: .95rem; letter-spacing: .02em; }
+.board__cell--res .flap { font-size: 1.32rem; }
+
+.cases__show {
+  display: grid;
+  grid-template-columns: minmax(0, .88fr) minmax(0, 1fr);
+  gap: clamp(1.6rem, 4vw, 3.2rem);
+  align-items: center;
+  margin-top: clamp(2rem, 4vw, 3rem);
+}
+
+.deckflow {
+  position: relative;
+  perspective: 1500px;
+  perspective-origin: 50% 50%;
+  height: clamp(16rem, 32vw, 30rem);
+}
+.deckflow__slide {
+  position: absolute;
+  top: 50%; left: 50%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  transform-style: preserve-3d;
+  will-change: transform;
+  transition:
+    transform .72s cubic-bezier(.22, .78, .24, 1),
+    opacity .6s ease,
+    filter .6s ease;
+}
+.deckflow__slide img {
+  display: block;
+  height: 100%;
+  width: auto;
+  max-width: none;
+  border: 1px solid rgba(232, 199, 122, .3);
+  border-radius: 1px;
+  box-shadow: 0 22px 44px rgba(0, 0, 0, .62), 0 3px 8px rgba(0, 0, 0, .5);
+  background: #2a1210;
+}
+.deckflow__slide:focus-visible { outline: 2px solid var(--gold); outline-offset: 6px; }
+.deckflow__slide.is-side { filter: brightness(.52) saturate(.78); }
+.deckflow__slide.is-side:hover { filter: brightness(.72) saturate(.9); }
+
+/* the floor the decks stand on, so the loop reads as depth and not as scale */
+.deckflow::after {
+  content: "";
+  position: absolute;
+  left: 8%; right: 8%; bottom: -.4rem;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(232, 199, 122, .26) 22%, rgba(232, 199, 122, .26) 78%, transparent);
+}
+
+/* every panel in one cell: the block is as tall as the tallest and never jumps.
+   Positioned above the loop, because a deck stepping aside must never end up
+   printed underneath the sentence it belongs to. */
+.cases__read {
+  display: grid;
+  position: relative;
+  z-index: 4;
+}
+.case {
+  grid-area: 1 / 1;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(6px);
+  transition: opacity .38s ease, transform .45s cubic-bezier(.2, .8, .25, 1), visibility 0s .45s;
+  pointer-events: none;
+}
+.case.is-on {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition: opacity .34s ease .06s, transform .45s cubic-bezier(.2, .8, .25, 1) .06s, visibility 0s;
+  pointer-events: auto;
+}
+
+.case__brand {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.7rem, 1.1rem + 2.2vw, 2.6rem);
+  line-height: 1;
+  margin: 0;
+}
+.case__what {
+  font-family: var(--font-read);
+  font-style: italic;
+  opacity: .62;
+  margin: .25rem 0 0;
+}
+.case__line {
+  margin: .9rem 0 0;
+  line-height: 1.62;
+  opacity: .86;
+  max-width: 38rem;
+}
+
+.case__figures {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(1.3rem, 3vw, 2.4rem);
+  margin: 1.4rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.case__fig { position: relative; }
+.case__figbtn {
+  display: block;
+  padding: 0 0 .35rem;
+  border: 0;
+  border-bottom: 1px dashed rgba(232, 199, 122, .34);
+  background: none;
+  font: inherit; color: inherit; text-align: left;
+  cursor: pointer;
+  transition: border-color .25s ease;
+}
+.case__figbtn:hover { border-bottom-color: var(--gold); }
+.case__figbtn:focus-visible { outline: 2px solid var(--gold); outline-offset: 4px; }
+
+.case__n {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.7rem, 1.1rem + 2.1vw, 2.6rem);
+  line-height: .96;
+  letter-spacing: -.012em;
+  color: var(--gold);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+.case__of {
+  display: block;
+  margin-top: .35rem;
+  font-family: var(--font-ui);
+  font-size: .5625rem; font-weight: 600;
+  letter-spacing: .14em; text-transform: uppercase;
+  opacity: .58;
+}
+
+.case__src {
+  position: absolute;
+  left: 0;
+  top: calc(100% + .55rem);
+  z-index: 6;
+  width: max(16rem, 100%);
+  max-width: 21rem;
+  padding: .7rem .8rem;
+  background: rgba(10, 3, 3, .97);
+  border: 1px solid rgba(232, 199, 122, .32);
+  border-radius: 2px;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, .6);
+  opacity: 0; visibility: hidden;
+  transform: translateY(-4px);
+  transition: opacity .22s ease, transform .26s cubic-bezier(.2, .8, .25, 1), visibility 0s .26s;
+}
+.case__fig:hover .case__src,
+.case__fig:focus-within .case__src {
+  opacity: 1; visibility: visible; transform: translateY(0);
+  transition: opacity .2s ease, transform .26s cubic-bezier(.2, .8, .25, 1), visibility 0s;
+}
+.case__srcquote { display: block; font-family: var(--font-read); font-size: .85rem; line-height: 1.45; margin: 0; }
+.case__srcfrom {
+  display: inline-block;
+  margin-top: .5rem;
+  font-family: var(--font-ui);
+  font-size: .5625rem; font-weight: 700;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: var(--gold);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(232, 199, 122, .45);
+  padding-bottom: .1rem;
+}
+
+.case__coda {
+  margin: 1.3rem 0 0;
+  padding-left: .95rem;
+  border-left: 2px solid rgba(232, 199, 122, .5);
+  font-family: var(--font-read);
+  font-size: .92rem; line-height: 1.55;
+  opacity: .7;
+  max-width: 34rem;
+}
+.case__codafrom {
+  display: block;
+  margin-top: .35rem;
+  font-family: var(--font-ui);
+  font-size: .5625rem; font-weight: 700;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: var(--gold);
+  opacity: .85;
+}
+
+.case__open {
+  display: inline-block;
+  margin-top: 1.4rem;
+  padding: .5rem .8rem;
+  background: var(--gold);
+  color: #150505;
+  border-radius: 2px;
+  font-family: var(--font-ui);
+  font-size: .625rem; font-weight: 700;
+  letter-spacing: .14em; text-transform: uppercase;
+  text-decoration: none;
+}
+.case__open:hover { background: #F0D9A2; }
+.case__open:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+
+/* --------------------------------------------------------------
+   narrow: the board keeps its rows but sheds its middle columns,
+   because a results board that scrolls sideways is not a board
+   -------------------------------------------------------------- */
+@media (max-width: 62rem) {
+  .cases { --plank: 7rem; }
+  .board__head { display: none; }
+  .board__rowbtn {
+    grid-template-columns: 1.2rem minmax(0, 1fr) auto;
+    row-gap: .4rem;
+  }
+  .board__cell--ran { grid-column: 2 / -1; grid-row: 2; }
+  .board__cell--what { grid-column: 2 / -1; grid-row: 3; }
+  .board__cell--res { grid-column: 3; grid-row: 1; }
+  .board__cell--unit { grid-column: 3; grid-row: 2; text-align: right; }
+  .cases__show { grid-template-columns: 1fr; }
+  .deckflow { height: clamp(13rem, 46vw, 17rem); }
+  .case__src {
+    position: static;
+    width: auto; max-width: none;
+    opacity: 1; visibility: visible; transform: none;
+    margin-top: .55rem; box-shadow: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .board__rowbtn, .board__lamp, .case__src { transition-duration: .01ms; }
+}

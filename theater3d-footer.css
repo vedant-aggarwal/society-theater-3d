@@ -1,0 +1,255 @@
+/* ============================================================
+   theater3d-footer.css — THE BOARD.
+
+   The footer is a circuit board. The mark is the chip in the
+   middle, the channels are pads soldered around it, and current
+   runs the copper between them.
+
+   THE CANVAS DRAWS COPPER AND CHARGE. IT DRAWS NOTHING YOU CAN
+   CLICK. Every pad is a real anchor sitting above the canvas in
+   normal flow, so the whole board tabs in order, middle clicks
+   into new tabs, reads correctly to a screen reader, and survives
+   the canvas being removed entirely. Under reduced motion the
+   canvas is removed entirely, and what is left is a legible set
+   of links on a dark ground.
+
+   That split is the whole architecture: layout in CSS so it is
+   responsive for free, positions measured back out of the DOM so
+   the traces follow whatever the layout did.
+   ============================================================ */
+
+.board {
+  --bd-ground: #0B0F0E;
+  --bd-copper: #B9975B;
+  --bd-live: #E8C77A;
+  position: relative;
+  isolation: isolate;
+  background: var(--bd-ground);
+  color: var(--off-white);
+  padding: clamp(3rem, 7vw, 5.5rem) var(--gutter) clamp(2rem, 4vw, 3rem);
+}
+
+/* the solder mask: a dark green board, and the faint grid a board is drilled on */
+.board::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(80% 60% at 50% 40%, rgba(232, 199, 122, .05), transparent 70%),
+    repeating-linear-gradient(0deg, rgba(232, 199, 122, .022) 0 1px, transparent 1px 28px),
+    repeating-linear-gradient(90deg, rgba(232, 199, 122, .022) 0 1px, transparent 1px 28px);
+}
+
+.board__inner {
+  position: relative;
+  z-index: 1;
+  max-width: 74rem;
+  margin-inline: auto;
+}
+
+/* the heading is for the document outline, not for the eye: the board says
+   what it is by being a board */
+.board__h {
+  position: absolute;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* --------------------------------------------------------------
+   the field
+   -------------------------------------------------------------- */
+.board__field {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr) minmax(0, 1fr);
+  grid-template-areas:
+    "ig   chip li"
+    "work mail soc";
+  gap: clamp(1.6rem, 4vw, 3.4rem) clamp(2rem, 6vw, 5rem);
+  align-items: center;
+  padding: clamp(1rem, 3vw, 2rem) 0;
+}
+
+.board__wire {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------------
+   the chip
+   -------------------------------------------------------------- */
+.board__chip {
+  grid-area: chip;
+  position: relative;
+  z-index: 2;
+  justify-self: center;
+  text-align: center;
+  padding: clamp(1.1rem, 2.6vw, 1.7rem) clamp(1.4rem, 3.4vw, 2.4rem);
+  background: linear-gradient(180deg, #14100C, #0C0908);
+  border: 1px solid color-mix(in srgb, var(--bd-copper) 46%, transparent);
+  border-radius: 2px;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, .55), inset 0 1px 0 rgba(232, 199, 122, .12);
+}
+/* the legs down each side, the way a DIP package has them */
+.board__chippins {
+  position: absolute;
+  left: 12%; right: 12%;
+  height: 5px;
+  background: repeating-linear-gradient(90deg,
+    var(--bd-copper) 0 7px, transparent 7px 17px);
+  opacity: .75;
+}
+.board__chippins { top: -5px; }
+.board__chippins--b { top: auto; bottom: -5px; }
+
+.board__chipmark {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-stretch: 87.5%;
+  font-size: clamp(1.5rem, 1rem + 2vw, 2.6rem);
+  line-height: 1;
+  letter-spacing: .01em;
+  color: var(--off-white);
+}
+.board__chipsub {
+  display: block;
+  margin-top: .5rem;
+  font-family: var(--font-ui);
+  font-size: .5rem; font-weight: 700;
+  letter-spacing: .22em; text-transform: uppercase;
+  color: color-mix(in srgb, var(--bd-live) 66%, transparent);
+}
+
+/* --------------------------------------------------------------
+   the pads
+   -------------------------------------------------------------- */
+.board__pad {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: .75rem;
+  padding: .8rem .95rem;
+  text-decoration: none;
+  color: var(--off-white);
+  background: linear-gradient(180deg, rgba(20, 16, 12, .92), rgba(10, 8, 7, .92));
+  border: 1px solid color-mix(in srgb, var(--bd-copper) 34%, transparent);
+  border-radius: 2px;
+  min-height: 44px;
+  transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+}
+/* placed by id, not by modifier: .board__pad--ch matches all three channel
+   pads and only won its area by source order, which is not a thing to leave
+   load bearing */
+.board__pad[data-pad="ig"] { grid-area: ig; }
+.board__pad[data-pad="li"] { grid-area: li; }
+.board__pad[data-pad="mail"] { grid-area: mail; }
+.board__pad[data-pad="work"] { grid-area: work; }
+.board__pad[data-pad="soc"] { grid-area: soc; }
+
+.board__pad:hover,
+.board__pad:focus-visible {
+  border-color: var(--bd-live);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--bd-live) 40%, transparent),
+              0 0 30px color-mix(in srgb, var(--bd-live) 22%, transparent);
+  transform: translateY(-1px);
+}
+.board__pad:focus-visible { outline: 2px solid var(--bd-live); outline-offset: 3px; }
+
+/* the indicator: dark until the pad is live */
+.board__led {
+  position: absolute;
+  top: 7px; right: 7px;
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--bd-copper) 40%, transparent);
+  transition: background .2s ease, box-shadow .2s ease;
+}
+.board__pad:hover .board__led,
+.board__pad:focus-visible .board__led,
+.board__pad.is-live .board__led {
+  background: var(--bd-live);
+  box-shadow: 0 0 9px var(--bd-live);
+}
+
+.board__glyph { width: 22px; height: 22px; fill: var(--bd-live); flex: 0 0 auto; }
+.board__dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  border: 2px solid color-mix(in srgb, var(--bd-copper) 70%, transparent);
+}
+.board__padtext { min-width: 0; }
+.board__padname {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1rem;
+  line-height: 1.15;
+}
+.board__padval {
+  display: block;
+  margin-top: .15rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: .625rem;
+  letter-spacing: .02em;
+  color: color-mix(in srgb, var(--off-white) 52%, transparent);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.board__pad--pg { border-style: dashed; }
+.board__pad--pg .board__padname { font-size: .92rem; }
+
+/* --------------------------------------------------------------
+   the foot of the board
+   -------------------------------------------------------------- */
+.board__foot {
+  margin-top: clamp(2rem, 5vw, 3.4rem);
+  padding-top: clamp(1.2rem, 2.6vw, 1.8rem);
+  border-top: 1px solid color-mix(in srgb, var(--bd-copper) 26%, transparent);
+  display: grid;
+  gap: .7rem;
+}
+.board__meta {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-size: .5rem; font-weight: 700;
+  letter-spacing: .2em; text-transform: uppercase;
+  color: color-mix(in srgb, var(--off-white) 34%, transparent);
+}
+
+/* --------------------------------------------------------------
+   narrow: the board reflows and the traces are re-measured, so
+   nothing about the wiring is hard coded to a layout
+   -------------------------------------------------------------- */
+@media (max-width: 54rem) {
+  .board__field {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas:
+      "chip chip"
+      "ig   li"
+      "mail mail"
+      "work soc";
+    gap: 1rem;
+  }
+  .board__pad { padding: .7rem .8rem; }
+  .board__padval { font-size: .5625rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .board__wire { display: none; }
+  .board__pad { transition: none; }
+  .board__pad:hover, .board__pad:focus-visible { transform: none; }
+}

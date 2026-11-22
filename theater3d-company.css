@@ -1,0 +1,306 @@
+
+.company {
+  --co-ground: #140806;
+  position: relative;
+  isolation: isolate;
+  /* NO overflow: hidden here. It makes this section a scroll container, and a
+     sticky child of a scroll container has nothing to scroll against, so the
+     stage silently stopped sticking and rode off the top of the screen. The
+     glow below is inset 0 and has nothing to clip anyway. */
+  background: var(--co-ground);
+  color: var(--off-white);
+  padding: clamp(3rem, 7vw, 5.5rem) var(--gutter) clamp(2.6rem, 5vw, 4rem);
+}
+
+/* the projector throw: one soft warm pool, nothing more */
+.company::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(90% 60% at 26% 24%,
+    rgba(232, 199, 122, .07), transparent 68%);
+}
+
+.co__inner { max-width: 74rem; margin-inline: auto; }
+
+/* --------------------------------------------------------------
+   the head
+   -------------------------------------------------------------- */
+.co__head { text-align: left; }
+.co__eyebrow {
+  margin: 0 0 .6rem;
+  font-family: var(--font-ui);
+  font-size: .5625rem; font-weight: 700;
+  letter-spacing: .3em; text-transform: uppercase;
+  color: color-mix(in srgb, var(--gold) 62%, transparent);
+}
+.co__title {
+  margin: 0;
+  text-align: left;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-stretch: 87.5%;
+  font-size: clamp(2.2rem, 1rem + 4vw, 4rem);
+  line-height: 1;
+  color: var(--off-white);
+}
+.co__season {
+  margin: .6rem 0 0;
+  font-family: var(--font-ui);
+  font-size: .5rem; font-weight: 700;
+  letter-spacing: .28em; text-transform: uppercase;
+  color: color-mix(in srgb, var(--off-white) 46%, transparent);
+}
+
+/* --------------------------------------------------------------
+   plate on the left, roll on the right
+   -------------------------------------------------------------- */
+.co__body {
+  display: grid;
+  grid-template-columns: minmax(0, 21rem) minmax(0, 1fr);
+  gap: clamp(2rem, 5vw, 5rem);
+  align-items: start;
+}
+
+/* the head and the plate stick together, as one stage the roll runs past */
+.co__stage {
+  position: sticky;
+  top: 0;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(1.2rem, 3vw, 2rem);
+  padding: 2rem 0;
+}
+.co__plate { text-align: left; }
+.co__frame {
+  position: relative;
+  aspect-ratio: 1;
+  max-width: 15rem;
+  overflow: hidden;
+  border-radius: 2px;
+  background: #1E0C09;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--gold) 30%, transparent),
+    0 20px 44px rgba(0, 0, 0, .55);
+}
+.co__shot {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  /* the plate is lit, not printed: a touch of warmth, nothing clever */
+  filter: saturate(.92) contrast(1.03);
+  transition: opacity .16s ease;
+}
+.co__frame.is-swapping .co__shot { opacity: 0; }
+
+/* The POST is what gets set large. It is the thing worth reading at a glance,
+   it changes least often as the roll runs, and it gives the plate something to
+   hold the eye with between one face and the next. */
+.co__prole {
+  margin: 1rem 0 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-stretch: 75%;
+  font-size: clamp(1.7rem, 1rem + 2.4vw, 3.1rem);
+  line-height: .96;
+  letter-spacing: .005em;
+  color: var(--gold);
+}
+.co__pname {
+  margin: .5rem 0 0;
+  font-family: var(--font-read);
+  font-size: clamp(1rem, .92rem + .4vw, 1.25rem);
+  line-height: 1.2;
+  color: color-mix(in srgb, var(--off-white) 78%, transparent);
+}
+.co__pnote {
+  margin: .7rem 0 0;
+  font-family: var(--font-read);
+  font-style: italic;
+  font-size: .82rem;
+  line-height: 1.3;
+  color: color-mix(in srgb, var(--off-white) 62%, transparent);
+}
+.co__pnote a { color: inherit; border-bottom: 1px solid color-mix(in srgb, var(--gold) 40%, transparent); text-decoration: none; }
+
+/* --------------------------------------------------------------
+   the roll
+   -------------------------------------------------------------- */
+/* Real travel, so the stage has something to stay still against, and a screen
+   of clearance at each end so the first and last names can both reach the
+   reading line. */
+.co__roll {
+  display: grid;
+  gap: clamp(2.2rem, 5vw, 4.2rem);
+  padding: 42svh 0 46svh;
+}
+
+.co__credit { text-align: left; }
+.co__role {
+  margin: 0 0 .35rem;
+  font-family: var(--font-ui);
+  font-size: .5rem; font-weight: 700;
+  letter-spacing: .3em; text-transform: uppercase;
+  color: color-mix(in srgb, var(--gold) 72%, transparent);
+}
+.co__names {
+  list-style: none;
+  margin: 0; padding: 0;
+  display: grid;
+  justify-items: start;
+  gap: .05rem;
+}
+
+/* The name IS the control. Sized as content, not as a link, and with a real
+   target around it so a thumb lands on it without aiming. */
+.co__name {
+  appearance: none;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-stretch: 87.5%;
+  font-size: clamp(1.35rem, .95rem + 1.5vw, 2.15rem);
+  line-height: 1.18;
+  letter-spacing: .002em;
+  color: color-mix(in srgb, var(--off-white) 82%, transparent);
+  padding: .28rem .3rem;
+  min-height: 44px;
+  transition: color .18s ease, text-shadow .18s ease;
+}
+/* The one who is up grows. It is a TRANSFORM and not a font-size, because
+   changing the type size of a name in a list you are scrolling past shifts
+   every name under it and the roll walks away from your eye. */
+.co__name {
+  transform-origin: left center;
+  transition: color .18s ease, transform .26s cubic-bezier(.2, .8, .25, 1),
+              text-shadow .18s ease, opacity .18s ease;
+  opacity: .62;
+}
+.co__name:hover,
+.co__name:focus-visible {
+  color: var(--off-white);
+  opacity: 1;
+}
+.co__name.is-up {
+  color: var(--gold);
+  opacity: 1;
+  transform: scale(1.16);
+  text-shadow: 0 0 26px rgba(232, 199, 122, .32);
+}
+.co__name:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+.co__credit--staff { margin-top: 0; }
+.co__staff {
+  margin: .12rem 0 0;
+  font-family: var(--font-read);
+  font-size: .95rem;
+  color: color-mix(in srgb, var(--off-white) 66%, transparent);
+}
+
+/* --------------------------------------------------------------
+   joining
+   -------------------------------------------------------------- */
+.co__join {
+  max-width: 44rem;
+  margin: clamp(2.6rem, 6vw, 4.5rem) auto 0;
+  padding-top: clamp(1.4rem, 3vw, 2.2rem);
+  border-top: 1px solid color-mix(in srgb, var(--gold) 26%, transparent);
+  text-align: center;
+}
+.co__joinhed {
+  margin: 0 0 .7rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.2rem, 1rem + 1vw, 1.7rem);
+  color: var(--off-white);
+}
+.co__joincopy {
+  margin: 0;
+  font-family: var(--font-read);
+  font-size: 1rem;
+  line-height: 1.5;
+  color: color-mix(in srgb, var(--off-white) 74%, transparent);
+}
+.co__ways {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: .8rem 2rem;
+  margin: 1.2rem 0 0;
+}
+.co__ways a {
+  font-family: var(--font-ui);
+  font-size: .6875rem; font-weight: 700;
+  letter-spacing: .16em; text-transform: uppercase;
+  color: var(--gold);
+  text-decoration: none;
+  padding: .5rem .2rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--gold) 45%, transparent);
+}
+.co__ways a:hover { border-bottom-color: var(--gold); }
+.co__src {
+  margin: 1.4rem 0 0;
+  font-family: var(--font-ui);
+  font-size: .5rem; font-weight: 600;
+  letter-spacing: .12em; text-transform: uppercase;
+  line-height: 1.9;
+  color: color-mix(in srgb, var(--off-white) 40%, transparent);
+}
+.co__src a { color: inherit; border-bottom: 1px solid color-mix(in srgb, var(--off-white) 28%, transparent); text-decoration: none; }
+
+/* --------------------------------------------------------------
+   narrow: the plate goes to the top and stays there while the roll
+   moves under it, which is the same idea and the same one image
+   -------------------------------------------------------------- */
+@media (max-width: 60rem) {
+  .co__body { grid-template-columns: 1fr; gap: 0; }
+
+  /* On a phone the stage becomes a bar that pins to the top and the roll runs
+     underneath it. Same mechanism, same one image, no hovering anywhere. */
+  .co__stage {
+    top: 0;
+    min-height: 0;
+    padding: .7rem;
+    display: grid;
+    grid-template-columns: 6.4rem minmax(0, 1fr);
+    grid-template-areas: "head head" "shot text";
+    gap: .5rem .9rem;
+    align-items: center;
+    background: color-mix(in srgb, #1E0C09 92%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid color-mix(in srgb, var(--gold) 24%, transparent);
+    z-index: 4;
+    margin-inline: calc(var(--gutter) * -1);
+    padding-inline: var(--gutter);
+  }
+  .co__head { grid-area: head; }
+  .co__title { font-size: 1.5rem; }
+  .co__season, .co__eyebrow { display: none; }
+  .co__plate {
+    grid-area: shot / shot / text / text;
+    display: contents;
+  }
+  .co__frame { grid-area: shot; max-width: none; }
+  .co__prole {
+    grid-area: text;
+    margin: 0;
+    font-size: clamp(1.25rem, 1rem + 2.4vw, 1.9rem);
+    align-self: end;
+  }
+  .co__pname { grid-area: text; margin: 0; align-self: start; font-size: .92rem; }
+  .co__pnote { display: none; }
+
+  .co__roll { padding: 30svh 0 40svh; gap: clamp(2rem, 8vw, 3rem); }
+  .co__name { font-size: clamp(1.3rem, 1.1rem + 2.4vw, 2rem); }
+  .co__name.is-up { transform: scale(1.1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .co__shot, .co__name { transition: none; }
+}

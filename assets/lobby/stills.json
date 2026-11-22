@@ -1,0 +1,66 @@
+[
+ {
+  "src": "assets/lobby/still-01.jpg",
+  "w": 620,
+  "h": 1101,
+  "caption": "Sample photo one, placeholder caption",
+  "when": "Sample date",
+  "url": "#"
+ },
+ {
+  "src": "assets/lobby/still-02.jpg",
+  "w": 620,
+  "h": 1105,
+  "caption": "Sample photo two, placeholder caption",
+  "when": "Sample date",
+  "url": "#"
+ },
+ {
+  "src": "assets/lobby/still-03.jpg",
+  "w": 620,
+  "h": 1119,
+  "caption": "Sample photo three, placeholder caption",
+  "when": "Sample date",
+  "url": "#"
+ },
+ {
+  "src": "assets/lobby/still-04.jpg",
+  "w": 620,
+  "h": 1102,
+  "caption": "Sample photo four, placeholder caption",
+  "when": "Sample date",
+  "url": "#"
+ },
+ {
+  "src": "assets/lobby/still-05.jpg",
+  "w": 620,
+  "h": 465,
+  "caption": "Sample photo five, placeholder caption",
+  "when": "Sample date",
+  "url": "#"
+ },
+ {
+  "src": "assets/lobby/still-06.jpg",
+  "w": 620,
+  "h": 413,
+  "caption": "Sample photo six, placeholder caption",
+  "when": "Sample date",
+  "url": "#"
+ },
+ {
+  "src": "assets/lobby/still-07.jpg",
+  "w": 620,
+  "h": 1343,
+  "caption": "Sample photo seven, placeholder caption",
+  "when": "Sample date",
+  "url": "#"
+ },
+ {
+  "src": "assets/lobby/still-08.jpg",
+  "w": 620,
+  "h": 620,
+  "caption": "Sample photo eight, placeholder caption",
+  "when": "Sample date",
+  "url": "#"
+ }
+]

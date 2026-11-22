@@ -1,0 +1,188 @@
+[
+ {
+  "slug": "2026-08-14-sample-post-01",
+  "kind": "Edition",
+  "title": "Sample edition 4",
+  "date": "August 2026",
+  "iso": "2026-08-14",
+  "url": "#",
+  "thumb": "assets/feed/2026-08-14-sample-post-01/thumb.jpg",
+  "pages": [
+   "assets/feed/2026-08-14-sample-post-01/p01.jpg",
+   "assets/feed/2026-08-14-sample-post-01/p02.jpg",
+   "assets/feed/2026-08-14-sample-post-01/p03.jpg",
+   "assets/feed/2026-08-14-sample-post-01/p04.jpg"
+  ],
+  "pageCount": 4,
+  "line": "Placeholder summary for the fourth sample edition of the bulletin."
+ },
+ {
+  "slug": "2026-08-11-sample-post-02",
+  "kind": "Session",
+  "title": "Sample session two",
+  "date": "August 2026",
+  "iso": "2026-08-11",
+  "url": "#",
+  "thumb": "assets/feed/2026-08-11-sample-post-02/thumb.jpg",
+  "pages": [
+   "assets/feed/2026-08-11-sample-post-02/p01.jpg"
+  ],
+  "pageCount": 1,
+  "line": "Placeholder summary for a sample speaker session."
+ },
+ {
+  "slug": "2026-08-02-sample-post-03",
+  "kind": "Series",
+  "title": "Sample series, episode 2",
+  "date": "August 2026",
+  "iso": "2026-08-02",
+  "url": "#",
+  "thumb": "assets/feed/2026-08-02-sample-post-03/thumb.jpg",
+  "pages": [
+   "assets/feed/2026-08-02-sample-post-03/p01.jpg",
+   "assets/feed/2026-08-02-sample-post-03/p02.jpg",
+   "assets/feed/2026-08-02-sample-post-03/p03.jpg"
+  ],
+  "pageCount": 3,
+  "line": "Placeholder summary for the second episode of a sample concept series."
+ },
+ {
+  "slug": "2026-07-23-sample-post-04",
+  "kind": "Series",
+  "title": "Sample series, episode 1",
+  "date": "July 2026",
+  "iso": "2026-07-23",
+  "url": "#",
+  "thumb": "assets/feed/2026-07-23-sample-post-04/thumb.jpg",
+  "pages": [
+   "assets/feed/2026-07-23-sample-post-04/p01.jpg",
+   "assets/feed/2026-07-23-sample-post-04/p02.jpg",
+   "assets/feed/2026-07-23-sample-post-04/p03.jpg"
+  ],
+  "pageCount": 3,
+  "line": "Placeholder summary for the first episode of a sample concept series."
+ },
+ {
+  "slug": "2026-07-22-sample-post-05",
+  "kind": "The team",
+  "title": "Sample team update",
+  "date": "July 2026",
+  "iso": "2026-07-22",
+  "url": "#",
+  "thumb": "assets/feed/2026-07-22-sample-post-05/thumb.jpg",
+  "pages": [
+   "assets/feed/2026-07-22-sample-post-05/p01.jpg"
+  ],
+  "pageCount": 1,
+  "line": "Placeholder summary for a sample team announcement."
+ },
+ {
+  "slug": "2026-03-31-sample-post-06",
+  "kind": "Live project",
+  "title": "Sample project one",
+  "date": "March 2026",
+  "iso": "2026-03-31",
+  "url": "#",
+  "thumb": "assets/feed/2026-03-31-sample-post-06/thumb.jpg",
+  "pages": [
+   "assets/feed/2026-03-31-sample-post-06/p01.jpg",
+   "assets/feed/2026-03-31-sample-post-06/p02.jpg",
+   "assets/feed/2026-03-31-sample-post-06/p03.jpg"
+  ],
+  "pageCount": 3,
+  "line": "Placeholder summary for the first sample live project."
+ },
+ {
+  "slug": "2026-03-24-sample-post-07",
+  "kind": "Live project",
+  "title": "Sample project two",
+  "date": "March 2026",
+  "iso": "2026-03-24",
+  "url": "#",
+  "thumb": "assets/feed/2026-03-24-sample-post-07/thumb.jpg",
+  "pages": [
+   "assets/feed/2026-03-24-sample-post-07/p01.jpg",
+   "assets/feed/2026-03-24-sample-post-07/p02.jpg",
+   "assets/feed/2026-03-24-sample-post-07/p03.jpg"
+  ],
+  "pageCount": 3,
+  "line": "Placeholder summary for the second sample live project."
+ },
+ {
+  "slug": "2026-03-23-sample-post-08",
+  "kind": "Live project",
+  "title": "Sample project three",
+  "date": "March 2026",
+  "iso": "2026-03-23",
+  "url": "#",
+  "thumb": "assets/feed/2026-03-23-sample-post-08/thumb.jpg",
+  "pages": [
+   "assets/feed/2026-03-23-sample-post-08/p01.jpg",
+   "assets/feed/2026-03-23-sample-post-08/p02.jpg",
+   "assets/feed/2026-03-23-sample-post-08/p03.jpg"
+  ],
+  "pageCount": 3,
+  "line": "Placeholder summary for the third sample live project."
+ },
+ {
+  "slug": "2026-02-08-sample-post-09",
+  "kind": "Casebook",
+  "title": "Sample casebook",
+  "date": "February 2026",
+  "iso": "2026-02-08",
+  "url": "#",
+  "thumb": "assets/feed/2026-02-08-sample-post-09/thumb.jpg",
+  "pages": [
+   "assets/feed/2026-02-08-sample-post-09/p01.jpg",
+   "assets/feed/2026-02-08-sample-post-09/p02.jpg"
+  ],
+  "pageCount": 2,
+  "line": "Placeholder summary for a sample casebook launch."
+ },
+ {
+  "slug": "2025-11-12-sample-post-10",
+  "kind": "Session",
+  "title": "Sample session one",
+  "date": "November 2025",
+  "iso": "2025-11-12",
+  "url": "#",
+  "thumb": "assets/feed/2025-11-12-sample-post-10/thumb.jpg",
+  "pages": [
+   "assets/feed/2025-11-12-sample-post-10/p01.jpg",
+   "assets/feed/2025-11-12-sample-post-10/p02.jpg"
+  ],
+  "pageCount": 2,
+  "line": "Placeholder summary for a sample workshop."
+ },
+ {
+  "slug": "2025-09-09-sample-post-11",
+  "kind": "Edition",
+  "title": "Sample edition 1",
+  "date": "September 2025",
+  "iso": "2025-09-09",
+  "url": "#",
+  "thumb": "assets/feed/2025-09-09-sample-post-11/thumb.jpg",
+  "pages": [
+   "assets/feed/2025-09-09-sample-post-11/p01.jpg",
+   "assets/feed/2025-09-09-sample-post-11/p02.jpg",
+   "assets/feed/2025-09-09-sample-post-11/p03.jpg"
+  ],
+  "pageCount": 3,
+  "line": "Placeholder summary for the first sample edition of the bulletin."
+ },
+ {
+  "slug": "2025-08-24-sample-post-12",
+  "kind": "Event",
+  "title": "Sample event",
+  "date": "August 2025",
+  "iso": "2025-08-24",
+  "url": "#",
+  "thumb": "assets/feed/2025-08-24-sample-post-12/thumb.jpg",
+  "pages": [
+   "assets/feed/2025-08-24-sample-post-12/p01.jpg",
+   "assets/feed/2025-08-24-sample-post-12/p02.jpg"
+  ],
+  "pageCount": 2,
+  "line": "Placeholder summary for a sample event."
+ }
+]

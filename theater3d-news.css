@@ -1,0 +1,555 @@
+
+.news {
+  /* newsprint, its ink, and the tint a boxed item is printed on */
+  --news: #CFC9B6;
+  --nink: #211C17;
+  --nlight: #FFFFFF;
+
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: var(--news);
+  color: var(--nink);
+  padding: clamp(1.6rem, 4vw, 3rem) 0 clamp(2rem, 4vw, 3.2rem);
+}
+
+.news__page {
+  /* deliberately NOT positioned: .news__grain insets against the section, so
+     the fold, the lighting and the fibre run the full bleed rather than
+     stopping at the measure and printing a seam down both sides */
+  max-width: 78rem;
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+/* --------------------------------------------------------------
+   THE SHEET
+
+   Fold, uneven light, edge falloff, show-through and fibre, in one
+   element and one paint. Nothing here is a blend mode.
+   -------------------------------------------------------------- */
+.news__grain {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background:
+    /* the fold, a little left of centre the way a broadsheet folds */
+    linear-gradient(90deg,
+      transparent 0 46.4%,
+      color-mix(in srgb, var(--nink) 5%, transparent) 47.5%,
+      color-mix(in srgb, var(--nlight) 19%, transparent) 48.3%,
+      color-mix(in srgb, var(--nink) 4.5%, transparent) 49.2%,
+      transparent 50.3%),
+    /* light falling across the sheet, as it does on any scan */
+    radial-gradient(130% 90% at 30% 16%,
+      color-mix(in srgb, var(--nlight) 14%, transparent), transparent 58%),
+    /* and the edges of a scanned page always go down */
+    radial-gradient(118% 104% at 50% 50%,
+      transparent 50%, color-mix(in srgb, var(--nink) 10%, transparent) 100%),
+    /* the type on the reverse of the sheet, barely there. This one carries the
+       texture; the vertical fibre under it is kept very weak on purpose,
+       because two regular patterns of similar strength stop reading as paper
+       and start reading as graph paper the moment anyone zooms in. */
+    repeating-linear-gradient(0deg,
+      color-mix(in srgb, var(--nink) 2.4%, transparent) 0 1px, transparent 1px 7px),
+    /* the fibre in the stock */
+    repeating-linear-gradient(90deg,
+      color-mix(in srgb, var(--nink) 1.1%, transparent) 0 1px, transparent 1px 3px);
+}
+
+/* --------------------------------------------------------------
+   THE PULP
+
+   A second layer, because the first one is all straight lines and
+   real paper is not. Blotches where the pulp lay thicker, a fine
+   speckle of dark flecks, and the slow horizontal banding a roller
+   leaves when it inks unevenly.
+
+   The speckle is four dot fields on pitches that share no common
+   factor: 17, 23, 31 and 41. Any two fields on related pitches
+   settle into a visible lattice within a few hundred pixels, which
+   is the tell that killed the first fibre pass. On coprime pitches
+   they do not repeat together across any sheet this size, so the
+   flecks read as pulp rather than as a pattern.
+
+   Still no blend mode and still no filter: two static elements,
+   two paints, cached.
+   -------------------------------------------------------------- */
+.news__grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    /* the second fold, across the sheet */
+    linear-gradient(180deg,
+      transparent 0 51.2%,
+      color-mix(in srgb, var(--nink) 4%, transparent) 52%,
+      color-mix(in srgb, var(--nlight) 15%, transparent) 52.6%,
+      color-mix(in srgb, var(--nink) 3.5%, transparent) 53.2%,
+      transparent 54%),
+    /* where the pulp lay thicker, and where it lay thin */
+    radial-gradient(ellipse 42% 30% at 17% 21%,
+      color-mix(in srgb, var(--nink) 3%, transparent), transparent 70%),
+    radial-gradient(ellipse 34% 44% at 77% 62%,
+      color-mix(in srgb, var(--nink) 2.6%, transparent), transparent 68%),
+    radial-gradient(ellipse 52% 24% at 43% 89%,
+      color-mix(in srgb, var(--nink) 2.4%, transparent), transparent 72%),
+    radial-gradient(ellipse 30% 40% at 91% 13%,
+      color-mix(in srgb, var(--nlight) 12%, transparent), transparent 66%),
+    radial-gradient(ellipse 26% 34% at 8% 74%,
+      color-mix(in srgb, var(--nlight) 10%, transparent), transparent 64%),
+    /* the roller inking unevenly down the sheet, on a long slow period */
+    repeating-linear-gradient(0deg,
+      color-mix(in srgb, var(--nink) .9%, transparent) 0 3px,
+      transparent 3px 46px,
+      color-mix(in srgb, var(--nlight) 3%, transparent) 46px 58px,
+      transparent 58px 268px),
+    /* and the flecks in the pulp itself.
+
+       Each field is held FAINT on purpose. Coprime pitches stop the four
+       fields repeating together, but they do nothing about a single field
+       being legible on its own, and at 15% these read as polka dots the
+       moment anyone zoomed. Only the sum of four barely visible fields
+       reads as noise. */
+    radial-gradient(circle at 31% 41%,
+      color-mix(in srgb, var(--nink) 6%, transparent) 0 4%, transparent 7%),
+    radial-gradient(circle at 69% 19%,
+      color-mix(in srgb, var(--nink) 5%, transparent) 0 4%, transparent 7%),
+    radial-gradient(circle at 21% 79%,
+      color-mix(in srgb, var(--nink) 5.5%, transparent) 0 3%, transparent 6%),
+    radial-gradient(circle at 61% 66%,
+      color-mix(in srgb, var(--nlight) 7%, transparent) 0 3%, transparent 6%);
+  background-size:
+    auto, auto, auto, auto, auto, auto, auto,
+    19px 19px, 29px 29px, 37px 37px, 53px 53px;
+}
+
+/* --------------------------------------------------------------
+   the nameplate: a SECTION FRONT nameplate, not a masthead for a
+   paper this society does not publish
+   -------------------------------------------------------------- */
+.news__plate {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: end;
+  gap: 1rem;
+  padding-bottom: .5rem;
+  border-bottom: 3px solid var(--nink);
+}
+.news__ear {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-size: .5rem;
+  font-weight: 700;
+  letter-spacing: .2em;
+  line-height: 1.8;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--nink) 62%, transparent);
+}
+.news__ear--r { text-align: right; }
+
+.news__name {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-stretch: 100%;
+  font-size: clamp(2.1rem, .6rem + 4.6vw, 4.6rem);
+  line-height: .95;
+  letter-spacing: -.015em;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* the folio bar, hairline over and under, the way a paper rules it */
+.news__folio {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 2px 0 clamp(1.4rem, 3vw, 2.2rem);
+  padding: .32rem 0;
+  border-top: 1px solid var(--nink);
+  border-bottom: 1px solid var(--nink);
+  font-family: var(--font-ui);
+  font-size: .5rem;
+  font-weight: 700;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--nink) 68%, transparent);
+}
+
+/* --------------------------------------------------------------
+   the lead: kicker, headline, deck, byline
+   -------------------------------------------------------------- */
+.news__lead {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  margin-bottom: clamp(1rem, 2.4vw, 1.6rem);
+}
+.news__kicker {
+  margin: 0 0 .5rem;
+  font-family: var(--font-ui);
+  font-size: .5625rem;
+  font-weight: 700;
+  letter-spacing: .3em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--nink) 58%, transparent);
+}
+.news__hed {
+  margin: 0 auto;
+  max-width: 22ch;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-stretch: 87.5%;
+  font-size: clamp(1.9rem, .7rem + 3.9vw, 3.9rem);
+  line-height: 1.02;
+  letter-spacing: -.012em;
+  /* ink spreads into newsprint, so nothing on this page is quite crisp */
+  text-shadow: 0 0 .4px currentColor;
+}
+.news__deck {
+  margin: .7rem auto 0;
+  max-width: 52ch;
+  font-family: var(--font-read);
+  font-size: clamp(.95rem, .88rem + .3vw, 1.1rem);
+  line-height: 1.4;
+  color: color-mix(in srgb, var(--nink) 88%, transparent);
+}
+.news__byline {
+  margin: .8rem 0 0;
+  font-family: var(--font-ui);
+  font-size: .5rem;
+  font-weight: 700;
+  letter-spacing: .24em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--nink) 60%, transparent);
+}
+
+/* --------------------------------------------------------------
+   THE COLUMNS
+
+   Justified and hyphenated on a short measure, which is the single
+   thing that makes a block of type read as a newspaper rather than
+   as a web article. lang="en" is set on the container because
+   hyphenation does not happen without it.
+   -------------------------------------------------------------- */
+.news__cols {
+  position: relative;
+  z-index: 1;
+  columns: 4;
+  column-gap: 1.5rem;
+  column-rule: 1px solid color-mix(in srgb, var(--nink) 20%, transparent);
+  padding-top: clamp(.9rem, 2vw, 1.3rem);
+  border-top: 1px solid var(--nink);
+  font-family: var(--font-read);
+  font-size: .8125rem;
+  line-height: 1.44;
+  text-align: justify;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+  text-shadow: 0 0 .3px currentColor;
+}
+.news__cols p {
+  margin: 0;
+  text-indent: 1.05em;
+  orphans: 2;
+  widows: 2;
+}
+.news__cols p.news__first { text-indent: 0; }
+
+/* the drop cap, three lines deep */
+.news__first::first-letter {
+  float: left;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 3.15em;
+  line-height: .78;
+  padding: .04em .07em 0 0;
+}
+.news__place {
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  font-size: .92em;
+}
+
+.news__sub {
+  margin: 1.05em 0 .3em;
+  text-align: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-stretch: 87.5%;
+  font-size: .95em;
+  line-height: 1.15;
+  letter-spacing: .01em;
+  break-after: avoid;
+}
+
+/* a reference in the copy is underlined the way a paper underlines
+   nothing at all, so it is dotted instead and stays out of the way */
+.news__ref {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px dotted color-mix(in srgb, var(--nink) 55%, transparent);
+}
+.news__ref:hover { border-bottom-style: solid; }
+
+/* --------------------------------------------------------------
+   the halftones
+
+   The lead runs across the measure above the columns, which is how
+   a section front actually carries its picture, and which is also
+   the only way it can be big enough to read: confined to one
+   column it came out 262px wide, and forty people in 262px is a
+   grey rectangle, not a photograph.
+   -------------------------------------------------------------- */
+.news__leadfig {
+  position: relative;
+  z-index: 1;
+  max-width: 47rem;
+  margin: 0 auto clamp(1rem, 2.2vw, 1.5rem);
+}
+.news__leadfig figcaption {
+  margin-top: .4rem;
+  font-family: var(--font-read);
+  font-style: italic;
+  font-size: .78rem;
+  line-height: 1.35;
+  color: color-mix(in srgb, var(--nink) 82%, transparent);
+}
+
+.news__fig {
+  margin: 0 0 .75rem;
+  break-inside: avoid;
+}
+
+/* The standalone picture, run across the measure below the article the way a
+   section front carries its second photograph, caption set alongside.
+
+   It is out of the column flow for a second reason as well as the design one:
+   an image inside a CSS multicol here decoded correctly, laid out correctly,
+   and still composited as a blank rectangle. Nothing in the box model
+   explained it, so rather than ship a photograph that might not paint, both
+   photographs now live outside the columns. */
+.news__standfig {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 21rem) minmax(0, 1fr);
+  gap: 1.2rem;
+  align-items: end;
+  margin-top: clamp(1rem, 2.2vw, 1.5rem);
+  padding-top: .85rem;
+  border-top: 1px solid color-mix(in srgb, var(--nink) 30%, transparent);
+}
+.news__standfig figcaption {
+  font-family: var(--font-read);
+  font-style: italic;
+  font-size: .82rem;
+  line-height: 1.36;
+  max-width: 40ch;
+  color: color-mix(in srgb, var(--nink) 84%, transparent);
+}
+
+.news__screen {
+  position: relative;
+  display: block;
+  /* newsprint photographs are never black and never sharp */
+  background: color-mix(in srgb, var(--nink) 10%, transparent);
+}
+.news__screen img {
+  display: block;
+  width: 100%;
+  height: auto;
+  /* Newsprint reproduction crushes the highlights and lifts the blacks, and it
+     has to hold two photographs shot in very different light: a dim lecture
+     room and a bright office. Tuned so the bright one keeps its midtones
+     instead of washing out to bare paper, which is what it did at contrast 1. */
+  filter: grayscale(1) sepia(.18) contrast(1.22) brightness(.9);
+}
+/* the dot screen itself */
+.news__screen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: .36;
+  background-image: radial-gradient(circle at 50% 50%,
+    color-mix(in srgb, var(--nink) 70%, transparent) 0 26%, transparent 30%);
+  background-size: 3px 3px;
+}
+
+.news__fig figcaption {
+  margin-top: .34rem;
+  font-family: var(--font-read);
+  font-style: italic;
+  font-size: .72rem;
+  line-height: 1.32;
+  text-align: left;
+  text-indent: 0;
+  hyphens: none;
+  color: color-mix(in srgb, var(--nink) 82%, transparent);
+}
+.news__credit {
+  font-family: var(--font-ui);
+  font-style: normal;
+  font-size: .46rem;
+  font-weight: 700;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--nink) 52%, transparent);
+  white-space: nowrap;
+}
+
+/* --------------------------------------------------------------
+   the pull quote, between heavy rules
+   -------------------------------------------------------------- */
+.news__pull {
+  margin: .9rem 0;
+  padding: .55rem 0;
+  border-top: 2px solid var(--nink);
+  border-bottom: 2px solid var(--nink);
+  break-inside: avoid;
+  text-align: left;
+  hyphens: none;
+}
+.news__pull p {
+  margin: 0;
+  text-indent: 0;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-stretch: 87.5%;
+  font-size: 1.02rem;
+  line-height: 1.16;
+}
+.news__pull cite {
+  display: block;
+  margin-top: .4rem;
+  font-family: var(--font-ui);
+  font-style: normal;
+  font-size: .46rem;
+  font-weight: 700;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+
+/* --------------------------------------------------------------
+   the boxed sidebar, across the measure
+   -------------------------------------------------------------- */
+.news__box {
+  position: relative;
+  z-index: 1;
+  margin: 1.3rem 0 .9rem;
+  padding: .8rem 1rem 1rem;
+  border-top: 3px solid var(--nink);
+  border-bottom: 3px solid var(--nink);
+  background: color-mix(in srgb, var(--nink) 5%, transparent);
+  text-align: left;
+  hyphens: none;
+}
+.news__boxhed {
+  margin: 0 0 .7rem;
+  text-indent: 0;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-stretch: 87.5%;
+  font-size: 1rem;
+  letter-spacing: .01em;
+}
+.news__sesslist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: .6rem 1.6rem;
+}
+.news__sess {
+  display: grid;
+  gap: .08rem;
+  padding-top: .4rem;
+  border-top: 1px solid color-mix(in srgb, var(--nink) 28%, transparent);
+}
+.news__sessdate {
+  font-family: var(--font-ui);
+  font-size: .46rem;
+  font-weight: 700;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--nink) 62%, transparent);
+}
+.news__sesswhat {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-stretch: 87.5%;
+  font-size: .84rem;
+  line-height: 1.2;
+}
+.news__sesswho {
+  display: block;
+  font-family: var(--font-read);
+  font-weight: 400;
+  font-style: italic;
+  font-size: .74rem;
+  line-height: 1.25;
+  color: color-mix(in srgb, var(--nink) 78%, transparent);
+}
+.news__sessref {
+  justify-self: start;
+  margin-top: .15rem;
+  font-family: var(--font-ui);
+  font-size: .44rem;
+  font-weight: 700;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--nink) 58%, transparent);
+  text-decoration: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--nink) 34%, transparent);
+}
+.news__sessref:hover { color: var(--nink); }
+
+/* the jump line, where a story would be carried over to another page */
+.news__jump {
+  position: relative;
+  z-index: 1;
+  margin: .2rem 0 0;
+  text-indent: 0;
+  text-align: right;
+  font-family: var(--font-read);
+  font-style: italic;
+  font-size: .78rem;
+  color: color-mix(in srgb, var(--nink) 74%, transparent);
+}
+.news__jump a { color: inherit; border-bottom: 1px solid color-mix(in srgb, var(--nink) 45%, transparent); text-decoration: none; }
+
+/* a wide sheet carries more columns, the way a broadsheet does */
+@media (min-width: 100rem) {
+  .news__page { max-width: 92rem; }
+  .news__cols { columns: 5; }
+}
+
+/* --------------------------------------------------------------
+   narrower sheets
+   -------------------------------------------------------------- */
+@media (max-width: 74rem) {
+  .news__cols { columns: 3; }
+  .news__sesslist { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 56rem) {
+  .news__cols { columns: 2; column-gap: 1.2rem; }
+  .news__name { font-size: clamp(1.7rem, 1rem + 5vw, 3rem); }
+}
+@media (max-width: 40rem) {
+  .news__cols { columns: 1; font-size: .875rem; text-align: left; }
+  .news__plate { grid-template-columns: 1fr; justify-items: center; text-align: center; }
+  .news__ear, .news__ear--r { text-align: center; }
+  .news__folio { flex-direction: column; align-items: center; gap: .1rem; text-align: center; }
+  .news__sesslist { grid-template-columns: 1fr; }
+  .news__jump { text-align: left; }
+}

@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Campaigns · The Society</title>
+<meta name="description" content="Sample live brand projects with placeholder decks and placeholder results.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:ital,wdth,wght@0,62.5..100,400..800;1,62.5..100,400..700&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="site.css">
+<style>
+  .caseshero{
+    background:var(--oxblood-deep);color:var(--off-white);
+    padding:clamp(1.4rem,4vw,2.6rem) var(--gutter) clamp(1.8rem,5vw,3rem);
+    position:relative;overflow:hidden;
+  }
+  .caseshero::before{
+    content:"";position:absolute;inset:-20%;pointer-events:none;
+    background:
+      linear-gradient(107deg,
+        color-mix(in srgb,var(--oxblood) 90%,transparent) 0%,
+        color-mix(in srgb,var(--oxblood-deep) 96%,transparent) 42%,
+        var(--oxblood-shadow) 100%),
+      radial-gradient(110% 70% at 20% 6%, rgba(255,225,180,.09), transparent 60%);
+  }
+  .caseshero > *{position:relative}
+  .caseshero .stack__line{color:var(--gold)}
+  .caseshero__stand{
+    margin:.9rem 0 0;max-width:44rem;
+    font-size:clamp(1.05rem,.95rem + .8vw,1.4rem);line-height:1.45;opacity:.94;
+  }
+  .clientroll{list-style:none;margin:clamp(1.4rem,4vw,2.2rem) 0 0;padding:0;
+    border-top:1px solid var(--rule)}
+  .clientroll li{border-bottom:1px solid color-mix(in srgb,var(--gold) 22%,transparent)}
+  .clientroll a{
+    display:flex;flex-wrap:wrap;align-items:baseline;gap:.2rem 1.2rem;
+    padding:.65rem 0;text-decoration:none;
+  }
+  .clientroll__name{
+    font-family:var(--font-display);font-stretch:62.5%;font-weight:800;
+    font-size:clamp(1.7rem,1.1rem + 3vw,3.1rem);line-height:1;color:var(--gold);
+    letter-spacing:.01em;
+  }
+  .clientroll__what{font-size:1rem;font-style:italic;opacity:.9}
+  .clientroll__date{margin-left:auto;font-family:var(--font-ui);font-size:.66rem;
+    letter-spacing:.14em;text-transform:uppercase;opacity:.7}
+  .clientroll a:hover .clientroll__name{text-decoration:underline;text-underline-offset:.14em;text-decoration-thickness:2px}
+
+  /* ---- one case = dossier + the deck as a deck ----------------- */
+  .case{padding-block:clamp(2.2rem,7vw,4.5rem)}
+  .case + .case{border-top:1px solid var(--rule-ink)}
+  .case__head{display:flex;flex-wrap:wrap;align-items:baseline;gap:.4rem 1.2rem;margin:0 0 .4rem}
+  .case__meta{margin:.2rem 0 1.4rem;font-family:var(--font-ui);font-size:.68rem;
+    letter-spacing:.13em;text-transform:uppercase;opacity:.65;display:flex;flex-wrap:wrap;gap:.3rem 1.4rem}
+  .case__grid{display:grid;gap:1.8rem}
+  @media (min-width:60rem){ .case__grid{grid-template-columns:1.1fr 1fr;gap:3.5rem} }
+  .dossier p{margin:.35rem 0 0;max-width:38rem}
+  .dossier h3{margin:1.25rem 0 0;font-family:var(--font-ui);font-size:.66rem;
+    letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:var(--oxblood)}
+  .dossier h3:first-child{margin-top:0}
+  .dossier ul:not(.ledger){margin:.4rem 0 0;padding:0;list-style:none}
+  .dossier ul:not(.ledger) li{padding:.28rem 0 .28rem 1.1rem;position:relative;border-top:1px solid color-mix(in srgb,var(--ink) 10%,transparent)}
+  .dossier ul:not(.ledger) li::before{content:"→";position:absolute;left:0;color:var(--oxblood);font-family:var(--font-ui);font-size:.8em}
+  /* the results ledger: their numbers, their words, with the receipt */
+  .ledger{margin:.5rem 0 0;padding:0;list-style:none;border-top:1px solid var(--rule-ink)}
+  .ledger li{display:flex;align-items:baseline;gap:.9rem;padding:.5rem 0;border-bottom:1px solid var(--rule-ink)}
+  .ledger b{
+    font-family:var(--font-display);font-stretch:75%;font-weight:700;
+    font-size:1.55rem;line-height:1;color:var(--oxblood);white-space:nowrap;
+  }
+  .ledger span{font-size:.95rem}
+  .case__source{margin:.9rem 0 0;font-family:var(--font-ui);font-size:.66rem;
+    letter-spacing:.08em;text-transform:uppercase;opacity:.62}
+  .case__source a{text-decoration:underline;text-underline-offset:.25em}
+
+  /* the deck: five plates on a strip, read like the published object */
+  .deck{margin:2rem 0 0}
+  .deck__label{display:flex;justify-content:space-between;align-items:baseline;
+    font-family:var(--font-ui);font-size:.66rem;letter-spacing:.14em;
+    text-transform:uppercase;font-weight:700;opacity:.7;margin:0 0 .5rem}
+  .deck__strip{
+    display:flex;gap:.75rem;overflow-x:auto;padding:.9rem;
+    background:var(--oxblood-deep);
+    scroll-snap-type:x proximity;
+    scrollbar-width:thin;
+    scrollbar-color:color-mix(in srgb,var(--gold) 55%,transparent) var(--oxblood-shadow);
+  }
+  .deck__page{flex:1 0 clamp(10.5rem,16vw,13rem);scroll-snap-align:start;margin:0}
+  .deck__page img{width:100%;aspect-ratio:4/5;object-fit:cover;display:block;
+    outline:1px solid color-mix(in srgb,var(--gold) 35%,transparent);outline-offset:-1px}
+  .deck__page figcaption{
+    margin-top:.4rem;font-family:var(--font-ui);font-size:.6rem;
+    letter-spacing:.13em;text-transform:uppercase;color:var(--gold);opacity:.85;
+    display:flex;justify-content:space-between;gap:.5rem;
+  }
+  .deck__note{margin:.5rem 0 0;font-family:var(--font-ui);font-size:.64rem;
+    letter-spacing:.08em;text-transform:uppercase;opacity:.55}
+
+  /* ---- the field photographs, full bleed ----------------------- */
+  .field{background:var(--oxblood-deep);color:var(--off-white);padding-block:clamp(2rem,6vw,3.5rem)}
+  .field__grid{display:grid;gap:1.5rem}
+  @media (min-width:56rem){ .field__grid{grid-template-columns:1.35fr 1fr;align-items:start} }
+  .field figure{margin:0}
+  .field img{width:100%;display:block;outline:1px solid var(--rule);outline-offset:-1px;
+    aspect-ratio:4/3;object-fit:cover}
+  .field img.crop-low{object-position:50% 72%}
+  .field figcaption{margin-top:.6rem;font-size:.95rem;line-height:1.5;opacity:.92;max-width:52ch}
+  .field figcaption .when{display:block;margin-top:.25rem;font-family:var(--font-ui);
+    font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);opacity:.85}
+
+  /* ---- the winners' record: a register, not a trophy wall ------- */
+  .record .index__ed{white-space:normal}
+
+  .collab{background:var(--oxblood);color:var(--off-white);
+    padding:clamp(2.2rem,6vw,3.5rem) var(--gutter)}
+  .collab blockquote{margin:0;font-family:var(--font-display);font-weight:600;
+    font-size:clamp(1.35rem,1rem + 1.9vw,2.2rem);line-height:1.22;color:var(--gold);
+    max-width:26em;text-wrap:balance}
+  .collab cite{display:block;margin-top:.7rem;font-style:normal;font-family:var(--font-ui);
+    font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;opacity:.75}
+  .collab__cta{display:inline-block;margin-top:1.4rem;padding:.6rem 1rem;
+    border:1px solid var(--gold);color:var(--gold);text-decoration:none;
+    font-family:var(--font-ui);font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;font-weight:700}
+  .collab__cta:hover{background:var(--gold);color:var(--oxblood-deep)}
+
+  @media (prefers-reduced-motion:reduce){
+    .deck__strip{scroll-snap-type:none}
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="topbar__mark" href="theater3d.html">THE SOCIETY<small>A SAMPLE STUDENT SOCIETY</small></a>
+  <nav class="topbar__nav" aria-label="Primary">
+    <a href="work.html" aria-current="page" style="text-decoration:underline;text-underline-offset:.3em">Campaigns</a>
+    <a href="summit.html">Summit</a>
+    <a href="learn.html">Case Method</a>
+    <a href="society.html">Society</a>
+    <a href="archive.html">Index</a>
+  </nav>
+</header>
+
+<div class="subbar subbar--dark">
+  <a href="theater3d.html">&larr; The theater</a>
+  <span>Live brand projects &middot; sample</span>
+</div>
+
+<main>
+
+  <section class="caseshero" aria-labelledby="cases-title">
+    <p class="eyebrow" style="color:var(--gold);opacity:.9">The Society &middot; Sample work for sample brands</p>
+    <h1 class="stack" id="cases-title" aria-label="Campaigns" style="margin:.5rem 0 0">
+      <span class="stack__line" aria-hidden="true">Campaigns</span>
+      <span class="stack__line" aria-hidden="true">Campaigns</span>
+      <span class="stack__line">Campaigns</span>
+    </h1>
+    <p class="caseshero__stand">
+      Placeholder introduction. Three sample brands, three sample projects, each shown
+      with a placeholder deck and placeholder numbers.
+    </p>
+    <ul class="clientroll">
+      <li><a href="#project-one">
+        <span class="clientroll__name">BRAND ONE</span>
+        <span class="clientroll__what">a sample on-ground campaign, consumer goods</span>
+        <span class="clientroll__date">Sample dates</span>
+      </a></li>
+      <li><a href="#project-two">
+        <span class="clientroll__name">BRAND TWO</span>
+        <span class="clientroll__what">sample campus activations, electronics</span>
+        <span class="clientroll__date">Sample dates</span>
+      </a></li>
+      <li><a href="#project-three">
+        <span class="clientroll__name">BRAND THREE</span>
+        <span class="clientroll__what">a sample product launch, snacking</span>
+        <span class="clientroll__date">Sample dates</span>
+      </a></li>
+    </ul>
+  </section>
+
+  <section class="case section--paper wrap" id="project-one" aria-labelledby="project-one-title">
+   <div class="limit">
+    <h2 class="rule-head" id="project-one-title">Brand One</h2>
+    <p class="case__meta">
+      <span>Sample category</span>
+      <span>Sample format &middot; Sample dates</span>
+      <span>Sample partnership</span>
+    </p>
+    <div class="case__grid">
+      <div class="dossier">
+        <h3>The brief</h3>
+        <p>Placeholder brief for Brand One. This sentence stands in for the problem the
+        brand brought to the society.</p>
+        <h3>What the team did</h3>
+        <ul>
+          <li>Placeholder action one</li>
+          <li>Placeholder action two</li>
+          <li>Placeholder action three</li>
+          <li>Placeholder action four</li>
+        </ul>
+      </div>
+      <div class="dossier">
+        <h3>Results, as published</h3>
+        <ul class="ledger">
+          <li><b>1,000+</b><span>sample metric one</span></li>
+          <li><b>100+</b><span>sample metric two</span></li>
+        </ul>
+        <p class="case__source">Source:
+          <a href="#">sample deck</a> &middot;
+          <a href="#">sample post</a>
+        </p>
+        <p style="margin-top:1.1rem;font-size:.95rem">Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+      </div>
+    </div>
+    <figure class="deck">
+        <div class="deck__label"><span>The case deck, sample</span><span>5 pages</span></div>
+        <div class="deck__strip" role="group" aria-label="Brand One case deck, five pages">
+          <figure class="deck__page">
+            <img src="assets/editions/case1/p01.jpg" alt="Placeholder deck page 1">
+            <figcaption><span>Sample page</span><span>01</span></figcaption>
+          </figure>
+          <figure class="deck__page">
+            <img src="assets/editions/case1/p02.jpg" alt="Placeholder deck page 2">
+            <figcaption><span>Sample page</span><span>02</span></figcaption>
+          </figure>
+          <figure class="deck__page">
+            <img src="assets/editions/case1/p03.jpg" alt="Placeholder deck page 3">
+            <figcaption><span>Sample page</span><span>03</span></figcaption>
+          </figure>
+          <figure class="deck__page">
+            <img src="assets/editions/case1/p04.jpg" alt="Placeholder deck page 4">
+            <figcaption><span>Sample page</span><span>04</span></figcaption>
+          </figure>
+          <figure class="deck__page">
+            <img src="assets/editions/case1/p05.jpg" alt="Placeholder deck page 5">
+            <figcaption><span>Sample page</span><span>05</span></figcaption>
+          </figure>
+        </div>
+        <p class="deck__note">Sample deck &middot; scrolls on smaller screens</p>
+    </figure>
+   </div>
+  </section>
+  <section class="case section--paper wrap" id="project-two" aria-labelledby="project-two-title">
+   <div class="limit">
+    <h2 class="rule-head" id="project-two-title">Brand Two</h2>
+    <p class="case__meta">
+      <span>Sample category</span>
+      <span>Sample format &middot; Sample dates</span>
+      <span>Sample partnership</span>
+    </p>
+    <div class="case__grid">
+      <div class="dossier">
+        <h3>The brief</h3>
+        <p>Placeholder brief for Brand Two. This sentence stands in for the problem the
+        brand brought to the society.</p>
+        <h3>What the team did</h3>
+        <ul>
+          <li>Placeholder action one</li>
+          <li>Placeholder action two</li>
+          <li>Placeholder action three</li>
+          <li>Placeholder action four</li>
+        </ul>
+      </div>
+      <div class="dossier">
+        <h3>Results, as published</h3>
+        <ul class="ledger">
+          <li><b>2,000+</b><span>sample metric one</span></li>
+          <li><b>200+</b><span>sample metric two</span></li>
+        </ul>
+        <p class="case__source">Source:
+          <a href="#">sample deck</a> &middot;
+          <a href="#">sample post</a>
+        </p>
+        <p style="margin-top:1.1rem;font-size:.95rem">Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+      </div>
+    </div>
+    <figure class="deck">
+        <div class="deck__label"><span>The case deck, sample</span><span>5 pages</span></div>
+        <div class="deck__strip" role="group" aria-label="Brand Two case deck, five pages">
+          <figure class="deck__page">
+            <img src="assets/editions/case2/p01.jpg" alt="Placeholder deck page 1">
+            <figcaption><span>Sample page</span><span>01</span></figcaption>
+          </figure>
+          <figure class="deck__page">
+            <img src="assets/editions/case2/p02.jpg" alt="Placeholder deck page 2">
+            <figcaption><span>Sample page</span><span>02</span></figcaption>
+          </figure>
+          <figure class="deck__page">
+            <img src="assets/editions/case2/p03.jpg" alt="Placeholder deck page 3">
+            <figcaption><span>Sample page</span><span>03</span></figcaption>
+          </figure>
+          <figure class="deck__page">
+            <img src="assets/editions/case2/p04.jpg" alt="Placeholder deck page 4">
+            <figcaption><span>Sample page</span><span>04</span></figcaption>
+          </figure>
+          <figure class="deck__page">
+            <img src="assets/editions/case2/p05.jpg" alt="Placeholder deck page 5">
+            <figcaption><span>Sample page</span><span>05</span></figcaption>
+          </figure>
+        </div>
+        <p class="deck__note">Sample deck &middot; scrolls on smaller screens</p>
+    </figure>
+   </div>
+  </section>
+  <section class="field wrap" aria-label="Field photographs from the campaigns">
+    <div class="limit field__grid">
+      <figure>
+        <img class="crop-low" src="assets/placeholders/landscape-1.jpg" alt="Placeholder field photograph">
+        <figcaption>
+          Placeholder caption for a field photograph from a sample campaign.
+          <span class="when">Sample place &middot; sample date</span>
+        </figcaption>
+      </figure>
+      <figure>
+        <img src="assets/placeholders/landscape-2.jpg" alt="Placeholder event photograph">
+        <figcaption>
+          Placeholder caption for a photograph from a sample launch event.
+          <span class="when">Sample place &middot; sample date</span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+  <section class="case section--paper wrap" id="project-three" aria-labelledby="project-three-title">
+   <div class="limit">
+    <h2 class="rule-head" id="project-three-title">Brand Three</h2>
+    <p class="case__meta">
+      <span>Sample category</span>
+      <span>Sample format &middot; Sample dates</span>
+      <span>Sample partnership</span>
+    </p>
+    <div class="case__grid">
+      <div class="dossier">
+        <h3>The brief</h3>
+        <p>Placeholder brief for Brand Three. This sentence stands in for the problem the
+        brand brought to the society.</p>
+        <h3>What the team did</h3>
+        <ul>
+          <li>Placeholder action one</li>
+          <li>Placeholder action two</li>
+          <li>Placeholder action three</li>
+          <li>Placeholder action four</li>
+        </ul>
+      </div>
+      <div class="dossier">
+        <h3>Results, as published</h3>
+        <ul class="ledger">
+          <li><b>300+</b><span>sample metric one</span></li>
+          <li><b>30+</b><span>sample metric two</span></li>
+          <li><b>3,000+</b><span>sample metric three</span></li>
+        </ul>
+        <p class="case__source">Source:
+          <a href="#">sample deck</a> &middot;
+          <a href="#">sample post</a>
+        </p>
+        <p style="margin-top:1.1rem;font-size:.95rem">Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+      </div>
+    </div>
+    <figure class="deck">
+        <div class="deck__label"><span>The case deck, sample</span><span>5 pages</span></div>
+        <div class="deck__strip" role="group" aria-label="Brand Three case deck, five pages">
+          <figure class="deck__page">
+            <img src="assets/editions/case3/p01.jpg" alt="Placeholder deck page 1">
+            <figcaption><span>Sample page</span><span>01</span></figcaption>
+          </figure>
+          <figure class="deck__page">
+            <img src="assets/editions/case3/p02.jpg" alt="Placeholder deck page 2">
+            <figcaption><span>Sample page</span><span>02</span></figcaption>
+          </figure>
+          <figure class="deck__page">
+            <img src="assets/editions/case3/p03.jpg" alt="Placeholder deck page 3">
+            <figcaption><span>Sample page</span><span>03</span></figcaption>
+          </figure>
+          <figure class="deck__page">
+            <img src="assets/editions/case3/p04.jpg" alt="Placeholder deck page 4">
+            <figcaption><span>Sample page</span><span>04</span></figcaption>
+          </figure>
+          <figure class="deck__page">
+            <img src="assets/editions/case3/p05.jpg" alt="Placeholder deck page 5">
+            <figcaption><span>Sample page</span><span>05</span></figcaption>
+          </figure>
+        </div>
+        <p class="deck__note">Sample deck &middot; scrolls on smaller screens</p>
+    </figure>
+   </div>
+  </section>
+
+  <section class="section section--paper wrap record" id="record" aria-labelledby="record-title">
+   <div class="limit">
+    <h2 class="rule-head" id="record-title">The record</h2>
+    <p style="max-width:56ch;margin:.8rem 0 1.4rem">
+      Placeholder introduction to a list of sample competition results.
+    </p>
+    <ul class="index">
+      <li class="index__row"><span class="index__inert">
+        <span class="index__ed">Sample year</span>
+        <span class="index__title">Sample competition one: sample result</span>
+        <span class="index__by">Member One &middot; Sample College</span>
+      </span></li>
+      <li class="index__row"><span class="index__inert">
+        <span class="index__ed">Sample year</span>
+        <span class="index__title">Sample competition two: sample result</span>
+        <span class="index__by">Member Two &amp; Member Three &middot; Sample College</span>
+      </span></li>
+      <li class="index__row"><span class="index__inert">
+        <span class="index__ed">Sample year</span>
+        <span class="index__title">Sample competition three: sample result</span>
+        <span class="index__by">Member Four &middot; Sample College</span>
+      </span></li>
+    </ul>
+    <p class="case__source" style="margin-top:.9rem">All results are sample data.</p>
+   </div>
+  </section>
+
+  <section class="collab" aria-label="Work with The Society">
+    <div class="limit">
+      <blockquote>
+        "A placeholder line inviting brands to collaborate."
+        <cite>The Society, sample copy</cite>
+      </blockquote>
+      <a class="collab__cta" href="#">Write to the society</a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="colophon">
+  <div class="colophon__cols">
+    <div><p class="colophon__label">Contact</p><a href="#">Contact link (placeholder)</a></div>
+    <div><p class="colophon__label">College</p><a href="#">Sample College website</a></div>
+  </div>
+  <nav class="colophon__links" aria-label="Standing links">
+    <a href="theater3d.html">The theater</a><a href="work.html">Campaigns</a><a href="summit.html">Summit</a><a href="learn.html">The Case Method</a><a href="society.html">The Society</a><a href="archive.html">The Index</a>
+  </nav>
+  <p class="colophon__credit">
+    <span style="padding-left:0">The Society &middot; Sample College &copy; 2026</span>
+    <span>Set in Noto Serif Display, Crimson Pro and Montserrat</span>
+  </p>
+</footer>
+</body>
+</html>
